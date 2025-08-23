@@ -14,8 +14,7 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - 🌍 Geographic spread & distance/DX analysis
 - 🔄 QSO-like reciprocal reports
 - ⏱ Hourly activity heatmaps & yearly unique counts
-
-🚀 Works on **Windows, Linux, macOS** — no heavy server required.
+- 🚀 Works on **Windows, Linux, macOS** — no heavy server required.
 
 ---
 
