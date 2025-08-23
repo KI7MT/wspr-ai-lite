@@ -107,3 +107,9 @@ reset: distclean
 	@$(ACT); $(PIP) install -r requirements.txt
 	@$(ACT); $(PY) pipelines/ingest.py --from 2014-07 --to 2014-07
 	@echo "Reset complete. Run: make run"
+# Docs tasks (MkDocs)
+docs-serve:
+	mkdocs serve
+
+docs-deploy:
+	mkdocs gh-deploy --force
