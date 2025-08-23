@@ -7,8 +7,6 @@
 [![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 [![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 
----
-
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 
 - 📊 SNR distributions & monthly spot trends
@@ -60,6 +58,8 @@ streamlit run app/wspr_app.py
 ```
 Then open http://localhost:8501 in your browser.
 
+---
+
 📊 Example Visualizations
 - SNR Distribution by Count
 - Monthly Spot Counts
@@ -68,8 +68,12 @@ Then open http://localhost:8501 in your browser.
 - Geographic Spread (Unique Grids)
 - Distance Distribution + Longest DX
 
+---
+
 📜 License
 This project is licensed under the MIT License. Open and free for amateur radio and research use.
+
+---
 
 🙌 Acknowledgements
 - WSPRNet community for providing global weak-signal data
@@ -77,9 +81,13 @@ This project is licensed under the MIT License. Open and free for amateur radio 
 - Contributors to DuckDB and Streamlit
 - Amateur radio operators worldwide who share spots and keep the network alive
 
+---
+
 📬 Contributing
 Pull requests are welcome!
 If you have feature ideas (e.g., new metrics, visualizations, or AI integrations), open an issue first to discuss.
+
+---
 
 🔮 Roadmap
 - 📦 Phase 1: wspr-ai-lite (this project)
