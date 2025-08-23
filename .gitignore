@@ -5,3 +5,4 @@ __pycache__/
 data/*.duckdb
 *.tar.gz
 .DS_Store
+.cache_history.json
