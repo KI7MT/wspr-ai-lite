@@ -2,6 +2,8 @@
 
 Lightweight WSPR (Weak Signal Propagation Reporter) analytics powered by **DuckDB** + **Streamlit**.
 
+![CI](https://github.com/YOUR_USERNAME/wspr-ai-lite/actions/workflows/ci.yml/badge.svg)
+
 ## Features
 - Year/Band filters, SNR distribution, monthly counts
 - Top reporting stations & most heard TX stations
