@@ -70,11 +70,6 @@ Then open http://localhost:8501 in your browser.
 
 ---
 
-📜 License
-This project is licensed under the MIT License. Open and free for amateur radio and research use.
-
----
-
 🙌 Acknowledgements
 - WSPRNet community for providing global weak-signal data
 - Joe Taylor, K1JT, and the WSJT-X Development Team
@@ -95,3 +90,8 @@ If you have feature ideas (e.g., new metrics, visualizations, or AI integrations
 - 🚀 Phase 2: wspr-ai-analytics
 - Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
 - Designed for heavier infrastructure and richer analysis
+
+---
+
+📜 License
+This project is licensed under the MIT License. Open and free for amateur radio and research use.
