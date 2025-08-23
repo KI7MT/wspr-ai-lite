@@ -19,6 +19,7 @@ help:
 	@echo "  ingest      Ingest a sample month (2014-07)"
 	@echo "  test        Run pytest"
 	@echo "  clean       Remove caches and __pycache__"
+	@echo "  distclean   Clean repo before sending to version ocontrol"
 	@echo
 
 setup-dev: venv
