@@ -9,6 +9,8 @@ ACT := . $(VENV)/bin/activate
 .PHONY: help setup-dev venv install run ingest test clean
 
 help:
+	@clear
+	@echo
 	@echo "Make targets:"
 	@echo "  setup-dev   Create venv and install dependencies"
 	@echo "  venv        Create Python virtual environment (.venv)"
@@ -17,6 +19,7 @@ help:
 	@echo "  ingest      Ingest a sample month (2014-07)"
 	@echo "  test        Run pytest"
 	@echo "  clean       Remove caches and __pycache__"
+	@echo
 
 setup-dev: venv
 	@$(ACT); $(PIP) install -r requirements.txt
@@ -39,5 +42,15 @@ test:
 
 clean:
 	@find . -name "__pycache__" -type d -prune -exec rm -rf {} \; || true
-	@rm -rf .pytest_cache .cache || true
+	@rm -rf .pytest_cache .cache .cache_* || true
+	@rm -f .cache_history.json || true
+	@rm -f data/*.duckdb data/*.duckdb-wal || true
+	@rm -rf htmlcov .coverage || true
 	@echo "Clean complete."
+
+distclean: clean
+	@rm -rf .venv || true
+	@rm -rf .streamlit || true
+	@rm -rf *.tar.gz *.zip || true
+	@rm -rf tmp temp || true
+	@echo "Dist-clean complete (venv, temp files, archives removed)."
