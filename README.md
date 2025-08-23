@@ -66,6 +66,35 @@ Then open http://localhost:8501 in your browser.
 - Most Heard TX Stations
 - Geographic Spread (Unique Grids)
 - Distance Distribution + Longest DX
+- Best DX per Band
+- Activity by Hour × Month
+- TX/RX Balance and QSO Success Rate
+
+---
+## 🛠 Development
+
+For contributors and developers:
+- docs/DEV_SETUP.md --> Development setup guide
+- docs/TESTING.md --> Testing instructions (pytest + Makefile)
+- docs/TROUBLESHOOTING.md --> Common issues & fixes
+
+```bash
+make setup-dev   # create venv and install deps
+make ingest      # run ingest pipeline
+make run         # launch Streamlit UI
+make test        # run pytest suite
+```
+
+### Testing
+Run unit tests for ingest and utilities:
+```bash
+pytest -q
+```
+
+Or via Makefile:
+```bash
+make test
+```
 
 ---
 
