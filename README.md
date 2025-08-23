@@ -59,7 +59,7 @@ Then open http://localhost:8501 in your browser.
 
 ---
 
-📊 Example Visualizations
+## 📊 Example Visualizations
 - SNR Distribution by Count
 - Monthly Spot Counts
 - Top Reporting Stations
@@ -69,7 +69,7 @@ Then open http://localhost:8501 in your browser.
 
 ---
 
-🙌 Acknowledgements
+## 🙌 Acknowledgements
 - WSPRNet community for providing global weak-signal data
 - Joe Taylor, K1JT, and the WSJT-X Development Team
 - Contributors to DuckDB and Streamlit
@@ -77,13 +77,13 @@ Then open http://localhost:8501 in your browser.
 
 ---
 
-📬 Contributing
+## 📬 Contributing
 Pull requests are welcome!
 If you have feature ideas (e.g., new metrics, visualizations, or AI integrations), open an issue first to discuss.
 
 ---
 
-🔮 Roadmap
+## 🔮 Roadmap
 - 📦 Phase 1: wspr-ai-lite (this project)
 - Lightweight, local-only DuckDB + Streamlit dashboard
 - 🚀 Phase 2: wspr-ai-analytics
@@ -92,5 +92,5 @@ If you have feature ideas (e.g., new metrics, visualizations, or AI integrations
 
 ---
 
-📜 License
+## 📜 License
 This project is licensed under the MIT License. Open and free for amateur radio and research use.
