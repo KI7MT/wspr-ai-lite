@@ -24,11 +24,12 @@ nav:
   - Home: index.md
   - User Setup: user-setup.md
   - Developer Setup: developer-setup.md
-  - Process Release: process-release.md
   - Testing: testing.md
   - Troubleshooting: troubleshooting.md
-  - Changelog: CHANGELOG.md
+  - Process Release: process-release.md
+  - Contributors: CONTRIBUTORS.md
   - License: LICENSE.md
+  - Changelog: CHANGELOG.md
 
 markdown_extensions:
   - admonition

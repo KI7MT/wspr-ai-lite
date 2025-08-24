@@ -2,13 +2,21 @@
 
 Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashboard built with **DuckDB** and **Streamlit**.
 
-## 🚀 Quick Links
-- **User Setup & Usage** → See [README](user-setup.md)
-- **Developer Setup** → See [DEV SETUP](developer-setup.md)
-- **Makefile Guide** → See [MAKEFILE](makefile.md)
-- **Testing** → See [TESTING](testing.md)
-- **Troubleshooting** → See [TROUBLESHOOTING](troubleshooting.md)
-- **Change Log** → See [CHANGELOG](CHANGELOG.md)
+# WSPR-AI-Lite Documentation
+
+Welcome to the documentation for **WSPR-AI-Lite** — a lightweight tool for exploring WSPRNet data with **DuckDB** and **Streamlit**.
+
+## Quick Links
+
+- [User Setup](user-setup.md) — Installation & usage guide for end users
+- [Developer Setup](developer-setup.md) — Dev environment, testing & contributions
+- [Process Release](process-release.md) — Release workflow & PyPI publishing
+- [Testing](testing.md) — Unit tests, smoke tests, CI details
+- [Troubleshooting](troubleshooting.md) — Common issues & fixes
+- [Changelog](CHANGELOG.md) — Project history & version notes
+- [License](LICENSE.md) — License terms
+
+📘 Tip: The navigation menu on the left provides the same structure.
 
 ## ✨ About
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
@@ -21,7 +29,7 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 
 Works on **Windows, Linux, macOS** — no heavy server required.
 
-## 🛠 Build & Serve
+## Build & Serve
 
 Install docs tooling:
 
