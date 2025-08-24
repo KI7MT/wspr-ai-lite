@@ -1,0 +1,8 @@
+[tool.interrogate]
+fail-under = 70
+verbose = true
+ignore-init-method = true
+ignore-magic = true
+ignore-private = true
+exclude = [".venv", "data", "site", "build", "dist", "tmp", "temp", ".pytest_cache", "__pycache__"]
+color = true

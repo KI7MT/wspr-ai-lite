@@ -1,6 +1,6 @@
 # 📘 Makefile Guide — wspr-ai-lite
 
-The `Makefile` provides common shortcuts for developers and users of **wspr-ai-lite**.  
+The `Makefile` provides common shortcuts for developers and users of **wspr-ai-lite**.
 It helps set up the environment, run the app, ingest data, clean up, and reset the project.
 
 Instead of typing long commands, you can run:
@@ -45,7 +45,7 @@ make venv
 ---
 
 ### `install`
-Installs dependencies into an existing `.venv`.  
+Installs dependencies into an existing `.venv`.
 Useful if you updated `requirements.txt`.
 
 ```bash
@@ -66,7 +66,7 @@ Then open [http://localhost:8501](http://localhost:8501) in your browser.
 ---
 
 ### `ingest`
-Ingests WSPRNet data into DuckDB.  
+Ingests WSPRNet data into DuckDB.
 By default, it pulls July 2014 as a test dataset:
 
 ```bash
@@ -78,7 +78,7 @@ This fetches monthly archives (or uses the cache), parses them, and writes to `d
 ---
 
 ### `test`
-Runs the test suite using `pytest`.  
+Runs the test suite using `pytest`.
 The `PYTHONPATH` is set automatically so `pipelines/` is found.
 
 ```bash
@@ -140,24 +140,24 @@ make run
 
 ## 🧑‍💻 Common Workflows
 
-- **First-time setup**  
+- **First-time setup**
   ```bash
   make setup-dev
   make ingest
   make run
   ```
 
-- **Run tests before pushing**  
+- **Run tests before pushing**
   ```bash
   make test
   ```
 
-- **Clean your repo before committing/pushing**  
+- **Clean your repo before committing/pushing**
   ```bash
   make distclean
   ```
 
-- **Start completely fresh (new venv + sample data)**  
+- **Start completely fresh (new venv + sample data)**
   ```bash
   make reset
   ```
