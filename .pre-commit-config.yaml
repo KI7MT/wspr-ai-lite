@@ -41,5 +41,5 @@ repos:
         language: python
         additional_dependencies: [interrogate]
         entry: interrogate
-        args: ['-c', 'pyproject.toml', 'app', 'pipelines']
+        args: ['-c', 'pyproject.toml', 'pipelines']
         pass_filenames: false
