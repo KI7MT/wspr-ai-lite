@@ -167,11 +167,11 @@ smoke-ingest: ## Ingest a single month into a temporary DuckDB
 	@echo "[smoke] ingest: OK"
 
 smoke-verify: ## Verify the DuckDB contains rows
-	@$(SMOKE_PY) -c "import duckdb,sys; con=duckdb.connect('$(SMOKE_DB)', read_only=True); cnt=con.execute('SELECT COUNT(*) FROM spots').fetchone()[0]; print(f'[smoke] rows: {cnt}'); sys.exit(0 if cnt>0 else 2)"
+	@$(SMOKE_PY) -c "import duckdb, os, sys; db=os.environ.get('DB','$(SMOKE_DB)'); con=duckdb.connect(db, read_only=True); cnt=con.execute('SELECT COUNT(*) FROM spots').fetchone()[0]; print(f'[smoke] rows: {cnt}'); sys.exit(0 if cnt>0 else 2)"
 	@echo "[smoke] verify: OK"
 
 smoke-ui-check: ## Check UI presence and streamlit availability
-	@$(SMOKE_PY) -c "import importlib, pathlib, wspr_ai_lite; p=pathlib.Path(wspr_ai_lite.__file__).with_name('wspr_app.py'); assert p.exists(), f'wspr_app.py missing at {p}'; importlib.import_module('streamlit'); print('[smoke] ui-check: app present & streamlit import OK')"
+	@$(SMOKE_PY) -c "import importlib, pathlib, wspr_ai_lite; p=pathlib.Path(wspr_ai_lite.__file__).with_name('wspr_ai_lite.py'); assert p.exists(), f'wspr_ai_lite.py missing at {p}'; importlib.import_module('streamlit'); print('[smoke] ui-check: app present & streamlit import OK')"
 	@echo "[smoke] ui-check: OK"
 
 smoke-clean: ## Remove smoke-test artifacts (venv + tmp DB)
