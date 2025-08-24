@@ -31,6 +31,13 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Prepare docs assets
+        run: |
+          cp CHANGELOG.md docs/CHANGELOG.md
+          # If your license file is named 'LICENSE' (no extension), copy to LICENSE.md for MkDocs
+          if [ -f LICENSE ]; then cp LICENSE docs/LICENSE.md; fi
+          if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
+
       - name: Install MkDocs + plugins
         run: |
           python -m pip install --upgrade pip
