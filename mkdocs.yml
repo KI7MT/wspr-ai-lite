@@ -1,6 +1,7 @@
 site_name: WSPR AI Lite Documentation
 site_description: Lightweight WSPR analytics with DuckDB + Streamlit
 site_author: KI7MT
+site_url: https://ki7mt.github.io/wspr-ai-lite/
 repo_url: https://github.com/KI7MT/wspr-ai-lite
 repo_name: KI7MT/wspr-ai-lite
 
