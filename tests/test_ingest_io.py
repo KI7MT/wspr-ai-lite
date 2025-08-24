@@ -1,10 +1,17 @@
 """
-Expanded tests for pipelines.ingest:
-- archive_url, month_range, band_from_freq_mhz
-- read_month_csv with mixed/invalid rows
-- download_month cache behavior
-- update_cache_history + clean_all_cached
-- ingest_month end-to-end insert into DuckDB
+Integration-style tests for pipelines.ingest with DuckDB and cache handling.
+
+Covers:
+- read_month_csv() with mixed valid/invalid rows.
+- download_month(): cache reuse (no network) via pre-created gz files.
+- update_cache_history() and clean_all_cached(): ensure absolute paths are stored and pruned.
+- ingest_month(): end-to-end load into a temp DuckDB database and schema/row checks.
+
+Use:
+    PYTHONPATH=. pytest -q tests/test_ingest_io.py
+Notes:
+    Uses tmp_path and monkeypatch to isolate side effects.
+    No network requests: test creates local gz payloads instead.
 """
 import io
 import gzip

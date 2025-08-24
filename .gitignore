@@ -6,6 +6,14 @@ data/*.duckdb
 *.tar.gz
 .DS_Store
 .cache_history.json
+
+
+# ------------------------
+# MkDocs Local Site Build
+# ------------------------
+/site/
+
+
 # ------------------------
 # OS cruft
 # ------------------------

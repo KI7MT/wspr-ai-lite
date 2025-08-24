@@ -1,13 +1,18 @@
 """
-tests/test_ingest.py
-====================
+Unit tests for pipelines.ingest (core helpers).
 
-Unit tests for selected ingest and utility functions.
+Covers:
+- month_range() spanning single and multi-year ranges.
+- archive_url() construction.
+- band_from_freq_mhz() mapping.
+- read_month_csv() basic parsing/validation.
 
-To run:
-    pytest -q
-or using Makefile:
-    make test
+Use:
+    PYTHONPATH=. pytest -q tests/test_ingest.py
+Notes:
+    These tests avoid network and DuckDB I/O.
+See also:
+    tests/test_ingest_io.py for end-to-end ingest & cache behavior.
 """
 import io
 import gzip

@@ -1,34 +1,66 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-pipelines/ingest.py
-===================
+WSPR ingest pipeline for wspr-ai-lite.
 
-Download month-archive CSVs from wsprnet.org, parse minimal fields, and append
-into a local DuckDB database at data/wspr.duckdb.
+This module downloads monthly WSPRNet archives (CSV.GZ), parses and normalizes
+rows, enriches them (band detection, reporter/tx Maidenhead grids), and inserts
+them into a local DuckDB database (`data/wspr.duckdb`). It also implements a
+download cache and a cache-history index for safe cleanup.
 
-- Caches downloads under --cache-dir (default: .cache)
-- Safely re-ingests without duplicating rows (INSERT of all rows; idempotency
-  relies on user choosing non-overlapping months or recreating DB if needed)
-- Computes:
-    * ts       (UTC timestamp from unix seconds)
-    * band     (approx band label from freq MHz; values like 160, 80, 60, ... 2)
-    * year, month
-    * reporter, reporter_grid, txcall, tx_grid, snr, freq
+Usage (CLI)
+-----------
+# Ingest a single month
+python pipelines/ingest.py --from 2014-07 --to 2014-07
 
-Usage
------
-Ingest a single month:
-    python pipelines/ingest.py --from 2014-07 --to 2014-07
+# Ingest a range of months
+python pipelines/ingest.py --from 2014-07 --to 2014-10
 
-Ingest a range:
-    python pipelines/ingest.py --from 2014-01 --to 2014-03
+# Set a custom cache directory
+python pipelines/ingest.py --from 2014-07 --to 2014-07 --cache .cache_wspr
 
-Specify cache directory:
-    python pipelines/ingest.py --from 2014-07 --to 2014-07 --cache-dir .cache_wspr
+# Only clean all cached download locations and exit
+python pipelines/ingest.py --clean-cache
 
-Clean all cached downloads (no ingest):
-    python pipelines/ingest.py --clean-cache
+Key Functions
+-------------
+- month_range(start_ym: str, end_ym: str) -> list[(int, int)]
+    Expand "YYYY-MM" start/end into a list of (year, month) tuples (inclusive).
+
+- archive_url(year: int, month: int) -> str
+    Build the WSPRNet monthly archive URL.
+
+- band_from_freq_mhz(freq_mhz: float) -> int | None
+    Map a frequency in MHz to a ham band label (e.g., 14.0956 -> 20).
+
+- read_month_csv(buf: io.BufferedIOBase) -> pandas.DataFrame
+    Parse a CSV buffer into a normalized DataFrame with columns:
+    [ts, band, freq, snr, reporter, reporter_grid, txcall, tx_grid, year, month].
+    Invalid/missing rows are dropped.
+
+- download_month(year: int, month: int, cache_dir: str) -> pathlib.Path
+    Download (or reuse from cache) the monthly CSV.GZ; returns local file path.
+
+- update_cache_history(cache_dir: str) -> None
+    Record cache_dir in a local ".cache_history.json" so `--clean-cache` can
+    remove all historical caches safely.
+
+- clean_all_cached() -> None
+    Remove all cached download directories listed in ".cache_history.json".
+
+- ingest_month(con: duckdb.DuckDBPyConnection, year: int, month: int, cache_dir: str) -> int
+    End-to-end: ensure table, read CSV, enrich, and INSERT rows. Returns row count.
+
+Assumptions & Notes
+-------------------
+- CSVs from WSPRNet do NOT have headers. We select fixed column indices.
+- We store enriched fields (reporter_grid, tx_grid) alongside the original `grid`.
+- All downloads are cached to avoid re-fetching identical months.
+- The ingest is idempotent at the month granularity if you avoid duplicates upstream.
+
+See Also
+--------
+- tests/test_ingest.py, tests/test_ingest_io.py for unit tests & integration tests.
 """
 from __future__ import annotations
 

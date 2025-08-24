@@ -1,40 +1,59 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-wspr-ai-lite: Streamlit UI
-==========================
+Streamlit UI for wspr-ai-lite.
 
-Overview
+This app visualizes local WSPR data stored in DuckDB (`data/wspr.duckdb`).
+It supports station-centric views, SNR distributions, monthly trends, activity
+heatmaps, DX/distance analysis (via Maidenhead-to-lat/lon), and a QSO-like
+reciprocity finder within a configurable time window.
+
+How to Run
+----------
+streamlit run app/wspr_app.py
+# then open http://localhost:8501
+
+Data Requirements
+-----------------
+The app expects a DuckDB database with table `spots` and columns:
+    ts (TIMESTAMP), band (VARCHAR), freq (DOUBLE), snr (INTEGER),
+    reporter (VARCHAR), reporter_grid (VARCHAR), txcall (VARCHAR),
+    tx_grid (VARCHAR), grid (VARCHAR), year (INTEGER), month (INTEGER)
+Populate the DB with the CLI ingest pipeline (see pipelines/ingest.py).
+
+Key UI Controls (typical)
+-------------------------
+- Date range (years/months)
+- Bands (multi-select)
+- Station filters: reporter (RX), txcall (TX)
+- QSO-like time window (default: 4 minutes)
+- Toggles for:
+    * Station-centric summaries (Top Reporters, Most-Heard TX)
+    * Distance metrics & best DX per band
+    * QSO-like reciprocity table
+    * Ingest status (row count, span)
+
+Main Panels
+-----------
+- SNR Distribution by Count
+- Monthly Spot Counts
+- Top Reporting Stations / Most Heard TX Stations
+- Geographic spread (unique grids)
+- Distance distribution & longest DX
+- Best DX per Band
+- Activity heatmap (Hour × Month)
+- TX vs. RX balance and QSO-like success rate
+
+Implementation Notes
+--------------------
+- Heavy computations are pushed into SQL where practical.
+- Distance uses Maidenhead grid to coordinates (Haversine).
+- The UI degrades gracefully when the DB has no matching data.
+
+See Also
 --------
-Lightweight, cross-platform UI for exploring WSPR (Weak Signal Propagation Reporter)
-spots stored in a local DuckDB file.
-
-Key Features
-------------
-- Year/Band filters
-- **SNR Distribution by Count**
-- **Monthly Spot Counts**
-- **Top Reporting Stations** + Unique RX/TX station counts
-- **Most Heard TX Stations**
-- **Geographic Spread** (unique grids)
-- **Distance Distribution & Longest DX** (grid-to-grid)
-- **Best DX per Band**
-- **Station-Centric Analysis** (My TX / My RX)
-- **Reciprocal Heard (QSO-Like) Finder** with time window & scope toggles
-- **Average SNR by Month**
-- **Activity by Hour × Month**
-- **Unique Stations by Year** trend
-- **Database / Ingest Status** footer
-
-Usage
------
-1) Ingest at least one month:
-
-       python pipelines/ingest.py --from 2014-07 --to 2014-07
-
-2) Run the UI:
-
-       streamlit run app/wspr_app.py
+- pipelines/ingest.py for building the DuckDB database
+- tests/ for automated checks
 """
 from __future__ import annotations
 

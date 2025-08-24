@@ -86,6 +86,7 @@ clean:
 	@rm -f .cache_history.json || true
 	@rm -f data/*.duckdb data/*.duckdb-wal || true
 	@rm -rf htmlcov .coverage || true
+	@rm -rf site/ || true
 	@echo "Clean complete."
 
 # -------------------------------------------------------------------
@@ -96,7 +97,8 @@ distclean: clean
 	@rm -rf .streamlit || true
 	@rm -rf *.tar.gz *.zip || true
 	@rm -rf tmp temp || true
-	@echo "Dist-clean complete (venv, temp files, archives removed)."
+	@rm -rf site/ || true
+	@echo "Dist-clean complete (venv, temp files, archives site/ removed)."
 
 # -------------------------------------------------------------------
 # Full reset: distclean + recreate venv + install deps + ingest sample
