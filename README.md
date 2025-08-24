@@ -34,7 +34,14 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - Streamlit UI for interactive exploration
 - Distance/DX analysis with Maidenhead grid conversion
 - QSO-like reciprocal finder with configurable time window
-- Ready-to-run on modest hardware
+
+### Fast Performance
+- Columnar Storage: DuckDB is a columnar database, which allows for better data compression and faster query execution.
+- Vectorization: proceses data in batches. optimized CPU usage, significantly faster than traditional OLTP databases.
+
+### Ease of Use
+- Simple Installation: DuckDB can be installed with just a few lines of code, and on any platform.
+- In-Process Operation: It runs within as a host application, eliminating network latency and simplifying data access.
 
 ## Quickstart (Recommended: PyPI)
 
