@@ -4,12 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2025-08-24
+### Fixed
+- Added missing `import os` in `cli.py` (caused `wspr-lite ui` to crash).
+- Ensured module docstring placement is compliant with Python’s `__future__` import rules and pre-commit checks.
+
+### Changed
+- `wspr_app.py` is now packaged inside `wspr_ai_lite`, so `wspr-lite ui` works out-of-the-box after `pip install`.
+- CLI `ui` subcommand now correctly resolves the installed app path instead of referencing `app/wspr_app.py`.
+
+### Notes
+- Users can now launch the dashboard with:
+  ```bash
+  wspr-lite ui --db ~/wspr-data/wspr.duckdb --port 8501
+
+
 ## [0.1.7] - 2025-08-23
 ### Fixed
-- 🐛 Fixed `wspr-lite ingest` failures when running from the PyPI package:
-  - Removed dependency on repo-local `pipelines/` (ingest is now fully self-contained in the package).
-  - Corrected timestamp handling: UTC → naive UTC for DuckDB.
-  - Fixed DuckDB insert by using `con.register()` for DataFrame ingestion.
+- Fixed `wspr-lite ingest` failures when running from the PyPI package:
+- Removed dependency on repo-local `pipelines/` (ingest is now fully self-contained in the package).
+- Corrected timestamp handling: UTC → naive UTC for DuckDB.
+- Fixed DuckDB insert by using `con.register()` for DataFrame ingestion.
 - Added Change log to site documents
 
 ### Changed
