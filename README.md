@@ -156,5 +156,11 @@ If you have feature ideas (e.g., new metrics, visualizations, or AI integrations
   - Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
   - Designed for heavier infrastructure and richer analysis
 
+## Code of Conduct
+Please review [Code of Conduct](https://github.com/KI7MT/wspr-ai-lite/blob/main/CODE_OF_CONDUCT.md) decliration.
+
+## Security
+Please review our [Security Policy](https://github.com/KI7MT/wspr-ai-lite/blob/main/SECURITY.md).
+
 ## 📜 License
 This project is licensed under the MIT License. Open and free for amateur radio and research use.

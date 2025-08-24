@@ -15,6 +15,8 @@ Welcome to the documentation for **WSPR-AI-Lite** — a lightweight tool for exp
 - [Troubleshooting](troubleshooting.md) — Common issues & fixes
 - [Changelog](CHANGELOG.md) — Project history & version notes
 - [License](LICENSE.md) — License terms
+- [Code of Conduct](https://github.com/KI7MT/wspr-ai-lite/blob/main/CODE_OF_CONDUCT.md)
+- [Security Policy](https://github.com/KI7MT/wspr-ai-lite/blob/main/SECURITY.md)
 
 📘 Tip: The navigation menu on the left provides the same structure.
 
