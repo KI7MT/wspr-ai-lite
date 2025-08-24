@@ -37,6 +37,7 @@ Homepage = "https://github.com/KI7MT/wspr-ai-lite"
 Documentation = "https://ki7mt.github.io/wspr-ai-lite/"
 Source = "https://github.com/KI7MT/wspr-ai-lite"
 Issues = "https://github.com/KI7MT/wspr-ai-lite/issues"
+Changelog = "https://github.com/KI7MT/wspr-ai-lite/blob/main/CHANGELOG.md"
 
 [project.scripts]
 wspr-lite = "wspr_ai_lite.cli:main"
