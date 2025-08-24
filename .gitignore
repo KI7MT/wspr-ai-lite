@@ -11,7 +11,10 @@ data/*.duckdb
 # ------------------------
 # MkDocs Local Site Build
 # ------------------------
-/site/
+site/
+!mkdocs.yml
+!docs/
+!docs/**
 
 
 # ------------------------

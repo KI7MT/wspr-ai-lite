@@ -31,12 +31,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Setup:
-      - User Setup & Usage: user-setup.md
-      - Developer Setup: DEV_SETUP.md
-      - Makefile Guide: MAKEFILE.md
-  - Testing: TESTING.md
-  - Troubleshooting: TROUBLESHOOTING.md
+  - User Setup & Usage: user-setup.md
+  - Developer Setup: dev_setup.md
+  - Makefile Guide: makefile.md
+  - Testing: testing.md
+  - Troubleshooting: troubleshooting.md
+  - Changelog: ../CHANGELOG.md
 
 markdown_extensions:
   - admonition
