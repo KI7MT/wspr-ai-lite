@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wspr-ai-lite"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Lightweight WSPR analytics: DuckDB ingest + Streamlit dashboard."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -40,6 +40,9 @@ Issues = "https://github.com/KI7MT/wspr-ai-lite/issues"
 
 [project.scripts]
 wspr-lite = "wspr_ai_lite.cli:main"
+
+[tool.hatch.version]
+path = "src/wspr_ai_lite/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/wspr_ai_lite"]
