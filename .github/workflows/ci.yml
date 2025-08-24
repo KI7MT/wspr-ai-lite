@@ -9,9 +9,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PYTHONUNBUFFERED: "1"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.13"]   # match your local env; expand later if desired
 
     steps:
       - name: Checkout
@@ -23,13 +30,27 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - name: Install dependencies (dev)
+      - name: Show env (debug)
+        run: |
+          python -V
+          uname -a
+          lscpu | head -n 5 || true
+
+      - name: Install dev dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
+          pip freeze
 
-      - name: Run tests
-        env:
-          PYTHONPATH: .
+      - name: Run tests (verbose, stop on first failure)
         run: |
-          pytest -q
+          pytest -vv --maxfail=1
+
+      - name: Upload pytest cache/logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-artifacts
+          path: |
+            .pytest_cache
+            .coverage
