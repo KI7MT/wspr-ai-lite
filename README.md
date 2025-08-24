@@ -2,7 +2,7 @@
 
 **Lightweight WSPR analytics rendering tool employing DuckDB + Streamlit**
 
-Designed to be portable, and lightweight, `wspr-ai-lite` can ne run RasperyPI's or an Enterprise Server.
+Designed to be portable, and lightweight, `wspr-ai-lite` can be run on RasperyPI's or Enterprise Servers.
 The portability of Python makes it OS agnostic. The only limiting factor is disk space. The more archives you elect to add, the larger the diskspace footprint becomes. In future releases, we provide resource utilization stats for CPU, RAM an storage.
 
 ## Resources
