@@ -5,7 +5,7 @@ Only the latest release of **wspr-ai-lite** is actively supported.
 
 ## Reporting Vulnerabilities
 Please report security issues **privately**:
-- 📧 [abuse@ki7mt.io]
+- [security @ ki7mt.io]
 
 Do **not** open a public GitHub Issue.
 
