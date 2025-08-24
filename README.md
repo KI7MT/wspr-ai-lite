@@ -20,6 +20,14 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)
 [![smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
 
+## Get Help
+- **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)
+- **Request a feature** → [New Feature Request](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=feature_request.yml)
+- **Ask a question / share ideas** → [GitHub Discussions](https://github.com/KI7MT/wspr-ai-lite/discussions)
+- **Read the docs** → https://ki7mt.github.io/wspr-ai-lite/
+
+## What Can You Do With It
+
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 
 - 📊 SNR distributions & monthly spot trends
