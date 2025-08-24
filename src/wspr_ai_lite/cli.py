@@ -25,8 +25,21 @@ from .ingest import ingest_month, month_range
 
 
 def _app_path() -> Path:
-    """Return the absolute path to the packaged Streamlit app (wspr_app.py)."""
-    return Path(__file__).with_name("wspr_app.py")
+    """
+    Resolve the Streamlit app path.
+
+    Order:
+    1) Packaged location (installed wheel): alongside this cli.py in wspr_ai_lite/.
+    2) Dev fallback (repo checkout): ../../app/wspr_app.py relative to this file.
+    """
+    # 1) packaged: wspr_ai_lite/wspr_app.py (same folder as cli.py)
+    packaged = Path(__file__).with_name("wspr_app.py")
+    if packaged.exists():
+        return packaged
+
+    # 2) dev fallback: repo-root/app/wspr_app.py
+    repo_fallback = Path(__file__).resolve().parents[2] / "app" / "wspr_app.py"
+    return repo_fallback
 
 def deprecated_entrypoint() -> None:
     """Temporary shim for the old `wspr-ai-lite` command name.

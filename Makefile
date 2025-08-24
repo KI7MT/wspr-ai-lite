@@ -32,7 +32,8 @@ ACT     := . $(VENV)/bin/activate
 # -------------------------------------------------------------------
 # Show available commands
 # -------------------------------------------------------------------
-help:
+help: ## Show this help
+	@grep -E '^[a-zA-Z0-9_.-]+:.*?##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 	@echo "Available make targets:"
 	@echo "  setup-dev      Create venv, install dev deps, install pre-commit hooks"
 	@echo "  venv           Create Python virtual environment (.venv)"
@@ -167,3 +168,76 @@ docs-serve:
 
 docs-deploy:
 	@$(ACT); mkdocs gh-deploy --force
+# =============================================================================
+# Smoke tests (automated)
+#   End-to-end validation from a clean wheel install:
+#     1) build wheel
+#     2) create isolated venv
+#     3) install built wheel
+#     4) ingest one month into a temp DuckDB
+#     5) assert rowcount > 0
+#     6) verify UI app is packaged and Streamlit importable
+# =============================================================================
+
+SMOKE_VENV    ?= .smoke-venv
+SMOKE_TMP     ?= .smoke-tmp
+SMOKE_DB      ?= $(SMOKE_TMP)/wspr.duckdb
+
+SMOKE_PY      := $(SMOKE_VENV)/bin/python
+SMOKE_PIP     := $(SMOKE_VENV)/bin/pip
+SMOKE_CLI     := $(SMOKE_VENV)/bin/wspr-ai-lite
+SMOKE_MONTH		?= 2014-07
+
+PKG_NAME      ?= wspr-ai-lite
+
+.PHONY: smoke-test smoke-clean smoke-build smoke-install smoke-ingest smoke-verify smoke-ui-check
+
+smoke-test: smoke-clean smoke-build smoke-install smoke-ingest smoke-verify smoke-ui-check ## Full end-to-end smoke test
+
+smoke-build: ## Build wheel+sdist for smoke test
+	@python -m pip install --disable-pip-version-check --upgrade pip build >/dev/null
+	@python -m build
+	@ls -1 dist/$(subst -,_,$(PKG_NAME))* 1>/dev/null
+	@echo "[smoke] build: OK"
+
+smoke-install: ## Create isolated smoke venv and install the built wheel
+	@rm -rf $(SMOKE_VENV) $(SMOKE_TMP) && mkdir -p $(SMOKE_TMP)
+	@python -m venv $(SMOKE_VENV)
+	@$(SMOKE_PIP) install --upgrade pip >/dev/null
+	@$(SMOKE_PIP) install dist/$(subst -,_,$(PKG_NAME))*whl >/dev/null
+	@$(SMOKE_CLI) --version || true
+	@echo "[smoke] install: OK"
+
+smoke-ingest: ## Ingest a single month into a temporary DuckDB
+	@mkdir -p $(SMOKE_TMP)
+	@$(SMOKE_CLI) ingest --from $(SMOKE_MONTH) --to $(SMOKE_MONTH) --db $(SMOKE_DB)
+	@echo "[smoke] ingest: OK"
+
+smoke-verify: ## Verify the DuckDB contains rows
+	@$(SMOKE_PY) -c "import duckdb,sys; con=duckdb.connect('$(SMOKE_DB)', read_only=True); cnt=con.execute('SELECT COUNT(*) FROM spots').fetchone()[0]; print(f'[smoke] rows: {cnt}'); sys.exit(0 if cnt>0 else 2)"
+	@echo "[smoke] verify: OK"
+
+smoke-ui-check: ## Check UI presence and streamlit availability
+	@$(SMOKE_PY) -c "import importlib, pathlib, wspr_ai_lite; p=pathlib.Path(wspr_ai_lite.__file__).with_name('wspr_app.py'); assert p.exists(), f'wspr_app.py missing at {p}'; importlib.import_module('streamlit'); print('[smoke] ui-check: app present & streamlit import OK')"
+	@echo "[smoke] ui-check: OK"
+
+smoke-clean: ## Remove smoke-test artifacts (venv + tmp DB)
+	@rm -rf $(SMOKE_VENV) $(SMOKE_TMP)
+	@echo "[smoke] clean: OK"
+
+# Convenience: deeper clean that also removes smoke artifacts
+.PHONY: dist-clean-all
+dist-clean-all: dist-clean ## Deep clean + remove smoke artifacts
+	@rm -rf .smoke-venv .smoke-tmp
+	@echo "🧼 dist-clean-all: removed smoke artifacts."
+
+.PHONY: smoke-test-pypi
+smoke-test-pypi: smoke-clean ## Install from PyPI and run verify+ui-check
+	@python -m venv $(SMOKE_VENV)
+	@$(SMOKE_PIP) install --upgrade pip >/dev/null
+	@$(SMOKE_PIP) install "wspr-ai-lite==$(VERSION)"
+	@mkdir -p $(SMOKE_TMP)
+	@$(SMOKE_CLI) ingest --from $(SMOKE_MONTH) --to $(SMOKE_MONTH) --db $(SMOKE_DB)
+	@$(SMOKE_PY) -c "import duckdb,sys; con=duckdb.connect('$(SMOKE_DB)', read_only=True); cnt=con.execute('SELECT COUNT(*) FROM spots').fetchone()[0]; print(f'[smoke] rows: {cnt}'); sys.exit(0 if cnt>0 else 2)"
+	@$(SMOKE_PY) -c "import importlib, pathlib, wspr_ai_lite; p=pathlib.Path(wspr_ai_lite.__file__).with_name('wspr_app.py'); assert p.exists(); importlib.import_module('streamlit'); print('[smoke] ui-check: app present & streamlit import OK')"
+	@echo "[smoke] PyPI smoke: OK"
