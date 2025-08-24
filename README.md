@@ -36,35 +36,34 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 - QSO-like reciprocal finder with configurable time window
 - Ready-to-run on modest hardware
 
-## Quickstart
+## Quickstart (Recommended: PyPI)
 
-### 1. Clone & Setup
+### 1. Install from PyPI
 ```bash
-git clone git@github.com:KI7MT/wspr-ai-lite.git
-cd wspr-ai-lite
-
-# optional venv
+# optional but recommended: create a virtualenv first
 python3 -m venv .venv && source .venv/bin/activate
-
-pip install -r requirements.txt
+pip install wspr-ai-lite
 ```
 
 ### 2. Ingest Data
 Fetch WSPRNet monthly archives and load them into DuckDB:
 
 ```bash
-# adjust to whatever range you wish, but be reasonable !!
+# adjust the range as needed, but be reasonable!
 wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
 ```
 - Downloads compressed monthly CSVs (caches locally in .cache/)
 - Normalizes into data/wspr.duckdb
 - Adds extra fields (band, reporter grid, tx grid)
 
-### 3. Run the UI
+### 3. Launch the Dashboard
 ```bash
 wspr-ai-lite ui --db data/wspr.duckdb --port 8501
 ```
-Then open http://localhost:8501 in your browser.
+Open http://localhost:8501 in your browser 🎉
+
+👉 For developers who want to hack on the code directly, see [Developer Setup](https://ki7mt.github.io/wspr-ai-lite/DEV_SETUP/).
+
 
 ## Example Visualizations
 - SNR Distribution by Count
