@@ -7,6 +7,7 @@
 [![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 [![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![Docs](https://img.shields.io/badge/docs-github_pages-blue)](https://KI7MT.github.io/wspr-ai-lite/)
+[![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
 
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 

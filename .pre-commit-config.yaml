@@ -1,0 +1,39 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=4000"]
+
+  - repo: local
+    hooks:
+      - id: forbid-artifacts
+        name: "Block generated artifacts (site/, DuckDB, caches)"
+        entry: bash -lc '
+          fail=0
+          files=$(git diff --cached --name-only)
+          for f in $files; do
+            case "$f" in
+              site/*|site/*/*) echo "❌ Blocked: $f (MkDocs output)"; fail=1 ;;
+              data/*.duckdb|data/*.duckdb-wal) echo "❌ Blocked: $f (local DB)"; fail=1 ;;
+              .cache_history.json) echo "❌ Blocked: $f (local cache index)"; fail=1 ;;
+              .pytest_cache/*|__pycache__/*) echo "❌ Blocked: $f (pytest/pycache)"; fail=1 ;;
+            esac
+          done
+          exit $fail
+        '
+        language: system
+        types: [file]
+        pass_filenames: false
+
+      - id: interrogate-docstrings
+        name: "Docstring coverage (interrogate)"
+        entry: bash -lc 'interrogate -i -v -m -p -r app pipelines tests'
+        language: system
+        types: [python]
