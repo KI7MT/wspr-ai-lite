@@ -14,6 +14,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
 
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 

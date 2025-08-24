@@ -1,25 +1,28 @@
+# .github/workflows/smoke.yml
 name: smoke
 on:
+  push: { branches: [ main ] }
+  pull_request: { branches: [ main ] }
   workflow_dispatch:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  smoke:
+  smoke-src:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
+        with: { python-version: "3.11" }
+      - run: pip install --upgrade pip build
+      - run: make smoke-test
 
-      - name: Install build deps (make smoke-test uses system python)
-        run: |
-          python -m pip install --upgrade pip build
-
-      - name: Run smoke-test
-        run: make smoke-test
+  smoke-pypi:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.ref_name }}   # e.g. v0.2.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install --upgrade pip
+      - run: make smoke-test-pypi VERSION=${VERSION#v}
