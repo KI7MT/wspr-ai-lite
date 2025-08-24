@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2025-08-24
 ### Changed
 - Default CLI command is now `wspr-ai-lite`.
-- Added transitional `wspr-lite` shim with deprecation warning.
+- Added transitional `wspr-ai-lite` shim with deprecation warning.
 
 ### Deprecated
 - The `wspr-lite` command will be removed in a future release.
@@ -15,22 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.9] - 2025-08-24
 ### Fixed
-- Added missing `import os` in `cli.py` (caused `wspr-lite ui` to crash).
+- Added missing `import os` in `cli.py` (caused `wspr-ai-lite ui` to crash).
 - Ensured module docstring placement is compliant with Python’s `__future__` import rules and pre-commit checks.
 
 ### Changed
-- `wspr_app.py` is now packaged inside `wspr_ai_lite`, so `wspr-lite ui` works out-of-the-box after `pip install`.
+- `wspr_app.py` is now packaged inside `wspr_ai_lite`, so `wspr-ai-lite ui` works out-of-the-box after `pip install`.
 - CLI `ui` subcommand now correctly resolves the installed app path instead of referencing `app/wspr_app.py`.
 
 ### Notes
 - Users can now launch the dashboard with:
   ```bash
-  wspr-lite ui --db ~/wspr-data/wspr.duckdb --port 8501
+  wspr-ai-lite ui --db ~/wspr-data/wspr.duckdb --port 8501
 
 
 ## [0.1.7] - 2025-08-23
 ### Fixed
-- Fixed `wspr-lite ingest` failures when running from the PyPI package:
+- Fixed `wspr-ai-lite ingest` failures when running from the PyPI package:
 - Removed dependency on repo-local `pipelines/` (ingest is now fully self-contained in the package).
 - Corrected timestamp handling: UTC → naive UTC for DuckDB.
 - Fixed DuckDB insert by using `con.register()` for DataFrame ingestion.
@@ -42,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.6] - 2025-08-23
 ### Added
 - Initial PyPI release of `wspr-ai-lite`.
-- CLI: `wspr-lite ingest` for pulling and storing WSPRNet monthly archives into DuckDB.
-- CLI: `wspr-lite ui` for launching the Streamlit dashboard.
+- CLI: `wspr-ai-lite ingest` for pulling and storing WSPRNet monthly archives into DuckDB.
+- CLI: `wspr-ai-lite ui` for launching the Streamlit dashboard.
 - Documentation site via MkDocs + Material theme.
 - Pre-commit hooks and CI workflows for linting, testing, and publishing.
 

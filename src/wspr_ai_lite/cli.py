@@ -8,8 +8,8 @@ Provides two subcommands:
 - `ui`:     Launch the Streamlit dashboard that reads from the DuckDB file.
 
 Usage examples:
-    wspr-lite ingest --from 2014-07 --to 2014-07 --db ~/wspr-data/wspr.duckdb
-    WSPR_DB_PATH=~/wspr-data/wspr.duckdb wspr-lite ui --port 8501
+    wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db ~/wspr-data/wspr.duckdb
+    WSPR_DB_PATH=~/wspr-data/wspr.duckdb wspr-ai-lite ui --port 8501
 """
 
 import argparse
@@ -29,12 +29,12 @@ def _app_path() -> Path:
     return Path(__file__).with_name("wspr_app.py")
 
 def deprecated_entrypoint() -> None:
-    """Temporary shim for the old `wspr-lite` command name.
+    """Temporary shim for the old `wspr-ai-lite` command name.
 
     Prints a deprecation warning and then calls main().
     """
     print(
-        "WARNING: The `wspr-lite` command conflicts with the official WSPR suite.\n"
+        "WARNING: The `wspr-ai-lite` command conflicts with the official WSPR suite.\n"
         "Please use the new command: `wspr-ai-lite`.\n",
         flush=True,
     )
@@ -42,7 +42,7 @@ def deprecated_entrypoint() -> None:
 
 def main() -> None:
     """Dispatch subcommands: `ingest` and `ui`."""
-    parser = argparse.ArgumentParser(prog="wspr-lite", description="WSPR AI Lite utilities")
+    parser = argparse.ArgumentParser(prog="wspr-ai-lite", description="WSPR AI Lite Utilities")
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
