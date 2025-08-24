@@ -48,6 +48,25 @@ help:
 	@echo "  reset          distclean + recreate venv + install + sample ingest"
 	@echo "  docs-serve     Serve MkDocs site locally"
 	@echo "  docs-deploy    Deploy MkDocs site to gh-pages"
+	@echo "  build          Build PyPi Pyjon Package"
+	@echo "  publish-test   Pulublish Package to PyPi Test Repository"
+	@echo "  publish				Pulublish Package to PyPi Production Repository"
+
+# -------------------------------------------------------------------
+# Development to PyPI
+# -------------------------------------------------------------------
+build:
+	@$(ACT); python -m build
+
+publish-test:
+	@$(ACT); python -m pip install --upgrade build twine
+	@$(ACT); python -m build
+	@$(ACT); python -m twine upload --repository testpypi dist/*
+
+publish:
+	@$(ACT); python -m pip install --upgrade build twine
+	@$(ACT); python -m build
+	@$(ACT); python -m twine upload dist/*
 
 # -------------------------------------------------------------------
 # Development setup: create venv, install dev requirements, install hooks
