@@ -1,4 +1,4 @@
-# 📘 Makefile Guide — wspr-ai-lite
+# Makefile Guide — wspr-ai-lite
 
 The `Makefile` provides common shortcuts for developers and users of **wspr-ai-lite**.
 It helps set up the environment, run the app, ingest data, clean up, and reset the project.
@@ -15,14 +15,10 @@ make setup-dev
 make run
 ```
 
----
-
-## 🔧 Targets Overview
+## Targets Overview
 
 ### `help`
 Prints a list of all available targets.
-
----
 
 ### `setup-dev`
 Creates a fresh Python virtual environment (`.venv`) and installs all dependencies from `requirements.txt`.
@@ -33,16 +29,12 @@ Use this the first time you clone the repo, or after running `make distclean`.
 make setup-dev
 ```
 
----
-
 ### `venv`
 Creates the virtual environment (`.venv`) only, without installing packages.
 
 ```bash
 make venv
 ```
-
----
 
 ### `install`
 Installs dependencies into an existing `.venv`.
@@ -52,8 +44,6 @@ Useful if you updated `requirements.txt`.
 make install
 ```
 
----
-
 ### `run`
 Runs the **Streamlit dashboard**.
 
@@ -62,8 +52,6 @@ make run
 ```
 
 Then open [http://localhost:8501](http://localhost:8501) in your browser.
-
----
 
 ### `ingest`
 Ingests WSPRNet data into DuckDB.
@@ -75,8 +63,6 @@ make ingest
 
 This fetches monthly archives (or uses the cache), parses them, and writes to `data/wspr.duckdb`.
 
----
-
 ### `test`
 Runs the test suite using `pytest`.
 The `PYTHONPATH` is set automatically so `pipelines/` is found.
@@ -84,8 +70,6 @@ The `PYTHONPATH` is set automatically so `pipelines/` is found.
 ```bash
 make test
 ```
-
----
 
 ### `clean`
 Removes temporary files, caches, test outputs, and local DuckDB databases:
@@ -99,8 +83,6 @@ Removes temporary files, caches, test outputs, and local DuckDB databases:
 ```bash
 make clean
 ```
-
----
 
 ### `distclean`
 Runs `clean` plus removes **all development artifacts**:
@@ -136,9 +118,7 @@ Afterwards, you can launch the app immediately:
 make run
 ```
 
----
-
-## 🧑‍💻 Common Workflows
+## Common Workflows
 
 - **First-time setup**
   ```bash
@@ -161,7 +141,5 @@ make run
   ```bash
   make reset
   ```
-
----
 
 This Makefile is designed to make development **repeatable, reliable, and fast**.

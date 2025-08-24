@@ -27,112 +27,73 @@ PIP     := pip
 VENV    := .venv
 ACT     := . $(VENV)/bin/activate
 
-.PHONY: help setup-dev venv install install-dev run ingest test lint-docs precommit-install clean distclean reset docs-serve docs-deploy
+# -------------------------------------------------------------------
+# Colors
+# -------------------------------------------------------------------
+C_R     := '\033[01;31m'   # red
+C_G     := '\033[01;32m'   # green
+C_Y     := '\033[01;33m'   # yellow
+C_C     := '\033[01;36m'   # cyan
+C_NC    := '\033[01;37m'   # no color
 
-# -------------------------------------------------------------------
-# Show available commands
-# -------------------------------------------------------------------
-help: ## Show this help
+
+.PHONY: help setup-dev venv install install-dev run ingest test lint-docs precommit-install clean distclean reset docs-serve docs-deploy ui
+
+help:
+	@echo ''
+	@echo 'Available Make Targets'
+	@echo '-------------------------------------------------------------------------------'
 	@grep -E '^[a-zA-Z0-9_.-]+:.*?##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-	@echo "Available make targets:"
-	@echo "  setup-dev      Create venv, install dev deps, install pre-commit hooks"
-	@echo "  venv           Create Python virtual environment (.venv)"
-	@echo "  install        Install runtime dependencies (requirements.txt)"
-	@echo "  install-dev    Install dev dependencies (requirements-dev.txt)"
-	@echo "  run            Run Streamlit UI"
-	@echo "  ingest         Ingest a sample month (2014-07)"
-	@echo "  test           Run pytest"
-	@echo "  lint-docs      Docstring coverage/style checks (interrogate/pydocstyle)"
-	@echo "  precommit-install Install git pre-commit hooks"
-	@echo "  clean          Remove caches, __pycache__, test artifacts, local DB, site/"
-	@echo "  distclean      clean + remove venv, temp, packaging artifacts"
-	@echo "  reset          distclean + recreate venv + install + sample ingest"
-	@echo "  docs-serve     Serve MkDocs site locally"
-	@echo "  docs-deploy    Deploy MkDocs site to gh-pages"
-	@echo "  build          Build PyPi Pyjon Package"
-	@echo "  publish-test   Pulublish Package to PyPi Test Repository"
-	@echo "  publish				Pulublish Package to PyPi Production Repository"
 
-# -------------------------------------------------------------------
-# Development to PyPI
-# -------------------------------------------------------------------
-build:
+build: ## Build PyPi Pyjon Package
 	@$(ACT); python -m build
 
-publish-test:
+publish-test: ## Pulublish Package to PyPi Test Repository
 	@$(ACT); python -m pip install --upgrade build twine
 	@$(ACT); python -m build
 	@$(ACT); python -m twine upload --repository testpypi dist/*
 
-publish:
+publish: ## Pulublish Package to PyPi Production Repository
 	@$(ACT); python -m pip install --upgrade build twine
 	@$(ACT); python -m build
 	@$(ACT); python -m twine upload dist/*
 
-# -------------------------------------------------------------------
-# Development setup: create venv, install dev requirements, install hooks
-# -------------------------------------------------------------------
-setup-dev: venv
+setup-dev: venv ## Create venv, install dev deps, install pre-commit hooks
 	@$(ACT); $(PIP) install --upgrade pip
 	@$(ACT); $(PIP) install -r requirements-dev.txt
 	@$(ACT); pre-commit install
 	@echo "Dev environment ready (venv, deps, pre-commit hooks)."
 
-# -------------------------------------------------------------------
-# Create Python virtual environment if missing
-# -------------------------------------------------------------------
-venv:
+venv: ## Create Python virtual environment (.venv)
 	@test -d $(VENV) || ($(PY) -m venv $(VENV) && echo "Created $(VENV)")
 
-# -------------------------------------------------------------------
-# Install only runtime dependencies (for end users)
-# -------------------------------------------------------------------
-install:
+install: ## Install runtime dependencies (requirements.txt)
 	@$(ACT); $(PIP) install --upgrade pip
 	@$(ACT); $(PIP) install -r requirements.txt
 
-# -------------------------------------------------------------------
-# Install development dependencies (linters, tests, hooks)
-# -------------------------------------------------------------------
-install-dev:
+install-dev: ## Install dev dependencies (requirements-dev.txt)
 	@$(ACT); $(PIP) install --upgrade pip
 	@$(ACT); $(PIP) install -r requirements-dev.txt
 
-# -------------------------------------------------------------------
-# Run Streamlit dashboard
-# -------------------------------------------------------------------
-run:
-	@$(ACT); streamlit run app/wspr_app.py
-
-# -------------------------------------------------------------------
-# Ingest a sample month of WSPR data (2014-07 by default)
-# -------------------------------------------------------------------
-ingest:
+ingest: ## Ingest a sample month (2014-07)
 	@$(ACT); $(PY) pipelines/ingest.py --from 2014-07 --to 2014-07
 
-# -------------------------------------------------------------------
-# Run the test suite (pytest, with PYTHONPATH set for discovery)
-# -------------------------------------------------------------------
-test:
+run: ## Run Streamlit UI
+	@DB?=data/wspr.duckdb; \
+	echo "[ui] DB=$${DB}"; \
+	wspr-ai-lite ui --db "$${DB}" --port 8501
+
+test: ##  Run pytest
 	@$(ACT); PYTHONPATH=. pytest -q
 
-# -------------------------------------------------------------------
-# Docstring checks: coverage (interrogate) + style (pydocstyle)
-# -------------------------------------------------------------------
-lint-docs:
+lint-docs: ## Docstring checks: coverage (interrogate) + style (pydocstyle)
 	@$(ACT); interrogate -i -v -m -p -r app pipelines tests | sed 's/^/interrogate: /'
 	@$(ACT); pydocstyle app pipelines tests || true
 
-# -------------------------------------------------------------------
-# Install git pre-commit hooks
-# -------------------------------------------------------------------
-precommit-install:
+precommit-install: ## Install git pre-commit hooks
 	@$(ACT); pre-commit install
 
-# -------------------------------------------------------------------
-# Clean temporary files, caches, local DBs, and MkDocs site/
-# -------------------------------------------------------------------
-clean:
+clean: ## Clean temporary files, caches, local DBs, and MkDocs site/
 	@find . -name "__pycache__" -type d -prune -exec rm -rf {} \; || true
 	@rm -rf .pytest_cache .cache .cache_* || true
 	@rm -f .cache_history.json || true
@@ -140,34 +101,26 @@ clean:
 	@rm -rf htmlcov .coverage site || true
 	@echo "Clean complete."
 
-# -------------------------------------------------------------------
-# More thorough clean: includes venv, packaging artifacts, temp dirs
-# -------------------------------------------------------------------
-distclean: clean
+distclean: clean ## More thorough clean: includes venv, packaging artifacts, temp dirs
 	@rm -rf $(VENV) || true
 	@rm -rf .streamlit || true
 	@rm -rf *.tar.gz *.zip || true
 	@rm -rf tmp temp || true
 	@echo "Dist-clean complete (venv, temp files, archives removed)."
 
-# -------------------------------------------------------------------
-# Full reset: distclean + recreate venv + install deps + ingest sample
-# -------------------------------------------------------------------
-reset: distclean
+reset: distclean ## Full reset: distclean + recreate venv + install deps + ingest sample
 	@$(PY) -m venv $(VENV)
 	@$(ACT); $(PIP) install --upgrade pip
 	@$(ACT); $(PIP) install -r requirements.txt
 	@$(ACT); $(PY) pipelines/ingest.py --from 2014-07 --to 2014-07
 	@echo "Reset complete. Run: make run"
 
-# -------------------------------------------------------------------
-# Docs tasks (MkDocs)
-# -------------------------------------------------------------------
-docs-serve:
+docs-serve: ## Docs tasks (MkDocs)
 	@$(ACT); mkdocs serve
 
-docs-deploy:
+docs-deploy: ## Deplot docs to hh-pages
 	@$(ACT); mkdocs gh-deploy --force
+
 # =============================================================================
 # Smoke tests (automated)
 #   End-to-end validation from a clean wheel install:

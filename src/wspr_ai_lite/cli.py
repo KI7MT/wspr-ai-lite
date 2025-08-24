@@ -30,15 +30,15 @@ def _app_path() -> Path:
 
     Order:
     1) Packaged location (installed wheel): alongside this cli.py in wspr_ai_lite/.
-    2) Dev fallback (repo checkout): ../../app/wspr_app.py relative to this file.
+    2) Dev fallback (repo checkout): ../../app/wspr_ai_lite.py relative to this file.
     """
-    # 1) packaged: wspr_ai_lite/wspr_app.py (same folder as cli.py)
-    packaged = Path(__file__).with_name("wspr_app.py")
+    # 1) packaged: wspr_ai_lite/wspr_ai_lite.py (same folder as cli.py)
+    packaged = Path(__file__).with_name("wspr_ai_lite.py")
     if packaged.exists():
         return packaged
 
-    # 2) dev fallback: repo-root/app/wspr_app.py
-    repo_fallback = Path(__file__).resolve().parents[2] / "app" / "wspr_app.py"
+    # 2) dev fallback: repo-root/app/wspr_ai_lite.py
+    repo_fallback = Path(__file__).resolve().parents[2] / "app" / "wspr_ai_lite.py"
     return repo_fallback
 
 def deprecated_entrypoint() -> None:

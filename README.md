@@ -1,6 +1,6 @@
 # 📡 wspr-ai-lite
 
-**Lightweight WSPR analytics with DuckDB + Streamlit**
+**Lightweight WSPR analytics rendering tool employing DuckDB + Streamlit**
 
 ## Resources
 
@@ -35,9 +35,7 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - QSO-like reciprocal finder with configurable time window
 - Ready-to-run on modest hardware
 
----
-
-## 🚀 Quickstart
+## Quickstart
 
 ### 1. Clone & Setup
 ```bash
@@ -55,21 +53,19 @@ Fetch WSPRNet monthly archives and load them into DuckDB:
 
 ```bash
 # adjust to whatever range you wish, but be reasonable !!
-python pipelines/ingest.py --from 2014-07 --to 2014-07
+wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
 ```
-- Downloads compressed monthly CSVs (caches locally)
+- Downloads compressed monthly CSVs (caches locally in .cache/)
 - Normalizes into data/wspr.duckdb
 - Adds extra fields (band, reporter grid, tx grid)
 
 ### 3. Run the UI
 ```bash
-streamlit run app/wspr_app.py
+wspr-ai-lite ui --db data/wspr.duckdb --port 8501
 ```
 Then open http://localhost:8501 in your browser.
 
----
-
-## 📊 Example Visualizations
+## Example Visualizations
 - SNR Distribution by Count
 - Monthly Spot Counts
 - Top Reporting Stations
@@ -80,13 +76,12 @@ Then open http://localhost:8501 in your browser.
 - Activity by Hour × Month
 - TX/RX Balance and QSO Success Rate
 
----
-## 🛠 Development
+## Development
 
 For contributors and developers:
-- docs/DEV_SETUP.md --> Development setup guide
-- docs/TESTING.md --> Testing instructions (pytest + Makefile)
-- docs/TROUBLESHOOTING.md --> Common issues & fixes
+- docs/dev-setup.md --> Development setup guide
+- docs/testing.md --> Testing instructions (pytest + Makefile)
+- docs/troubleshooting.md --> Common issues & fixes
 
 ```bash
 make setup-dev   # create venv and install deps
@@ -97,39 +92,62 @@ make test        # run pytest suite
 
 ### Testing
 Run unit tests for ingest and utilities:
+
+### Makefile Usage
+
+There is an extensive list of Makefile targets that simplify operations. See `make help` for a full list of available targets.
+
 ```bash
-pytest -q
+make help
+
+# sample output
+
+Available Make Targets
+-------------------------------------------------------------------------------
+build                Build PyPi Pyjon Package
+clean                Clean temporary files, caches, local DBs, and MkDocs site/
+dist-clean-all       Deep clean + remove smoke artifacts
+distclean            More thorough clean: includes venv, packaging artifacts, temp dirs
+docs-deploy          Deplot docs to hh-pages
+docs-serve           Docs tasks (MkDocs)
+ingest               Ingest a sample month (2014-07)
+install-dev          Install dev dependencies (requirements-dev.txt)
+install              Install runtime dependencies (requirements.txt)
+lint-docs            Docstring checks: coverage (interrogate) + style (pydocstyle)
+precommit-install    Install git pre-commit hooks
+publish-test         Pulublish Package to PyPi Test Repository
+publish              Pulublish Package to PyPi Production Repository
+reset                Full reset: distclean + recreate venv + install deps + ingest sample
+run                  Run Streamlit UI
+setup-dev            Create venv, install dev deps, install pre-commit hooks
+smoke-build          Build wheel+sdist for smoke test
+smoke-clean          Remove smoke-test artifacts (venv + tmp DB)
+smoke-ingest         Ingest a single month into a temporary DuckDB
+smoke-install        Create isolated smoke venv and install the built wheel
+smoke-test-pypi      Install from PyPI and run verify+ui-check
+smoke-test           Full end-to-end smoke test
+smoke-ui-check       Check UI presence and streamlit availability
+smoke-verify         Verify the DuckDB contains rows
+test                  Run pytest
+venv                 Create Python virtual environment (.venv)
 ```
 
-Or via Makefile:
-```bash
-make test
-```
-
----
-
-## 🙌 Acknowledgements
+## Acknowledgements
 - WSPRNet community for providing global weak-signal data
 - Joe Taylor, K1JT, and the WSJT-X Development Team
 - Contributors to DuckDB and Streamlit
 - Amateur radio operators worldwide who share spots and keep the network alive
 
----
-
-## 📬 Contributing
+## Contributing
 Pull requests are welcome!
 If you have feature ideas (e.g., new metrics, visualizations, or AI integrations), open an issue first to discuss.
 
----
-
-## 🔮 Roadmap
-- 📦 Phase 1: wspr-ai-lite (this project)
+## Roadmap
+- Phase 1: wspr-ai-lite (this project)
 - Lightweight, local-only DuckDB + Streamlit dashboard
-- 🚀 Phase 2: wspr-ai-analytics
+- Phase 2: wspr-ai-analytics
 - Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
 - Designed for heavier infrastructure and richer analysis
-
----
 
 ## 📜 License
 This project is licensed under the MIT License. Open and free for amateur radio and research use.

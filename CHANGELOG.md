@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2025-08-24
+### Changed
+- Updated wspr_app.py entry point as the file moved from `app/wspr_app.py` to `srv/wspr_ai_lite/wspr_app.py`.
+- Cleaned up Makefile to simplify help message.
+- Removed docstrings from wspr_ai_lite.py to prevent rendering on landing page.
+- Renamed the app entry point `wspr_app.py` to `wspr_ai_lite.py` to prevent potential WSPR app collisions.
+- Updated Docs for new entry point `wspr-au-lite`
+- Updated Developer documentation.
+
 ## [0.2.1] - 2025-08-24
 ### Changed
 - CLI now displays the program name as `wspr-ai-lite` (instead of `wspr-lite`) in `--version` and help output.
@@ -18,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 - The `wspr-lite` command will be removed in a future release.
 
-
 ## [0.1.9] - 2025-08-24
 ### Fixed
 - Added missing `import os` in `cli.py` (caused `wspr-ai-lite ui` to crash).
@@ -32,7 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Users can now launch the dashboard with:
   ```bash
   wspr-ai-lite ui --db ~/wspr-data/wspr.duckdb --port 8501
-
 
 ## [0.1.7] - 2025-08-23
 ### Fixed

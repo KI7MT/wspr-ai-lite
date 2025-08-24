@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from __future__ import annotations
 
 """
@@ -7,77 +10,6 @@ Visualizes local WSPR data stored in DuckDB (``data/wspr.duckdb``).
 Provides station-centric views, SNR distributions, monthly trends,
 activity heatmaps, DX/distance analysis (Maidenhead → lat/lon), and
 a QSO-like reciprocity finder within a configurable time window.
-
-Run
----
-streamlit run app/wspr_app.py
-# then open http://localhost:8501
-
-Data Requirements
------------------
-Table ``spots`` with columns:
-ts TIMESTAMP, band VARCHAR, freq DOUBLE, snr INTEGER,
-reporter VARCHAR, reporter_grid VARCHAR, txcall VARCHAR,
-tx_grid VARCHAR, grid VARCHAR, year INTEGER, month INTEGER.
-"""
-
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Streamlit UI for wspr-ai-lite.
-
-This app visualizes local WSPR data stored in DuckDB (`data/wspr.duckdb`).
-It supports station-centric views, SNR distributions, monthly trends, activity
-heatmaps, DX/distance analysis (via Maidenhead-to-lat/lon), and a QSO-like
-reciprocity finder within a configurable time window.
-
-How to Run
-----------
-streamlit run app/wspr_app.py
-# then open http://localhost:8501
-
-Data Requirements
------------------
-The app expects a DuckDB database with table `spots` and columns:
-    ts (TIMESTAMP), band (VARCHAR), freq (DOUBLE), snr (INTEGER),
-    reporter (VARCHAR), reporter_grid (VARCHAR), txcall (VARCHAR),
-    tx_grid (VARCHAR), grid (VARCHAR), year (INTEGER), month (INTEGER)
-Populate the DB with the CLI ingest pipeline (see pipelines/ingest.py).
-
-Key UI Controls (typical)
--------------------------
-- Date range (years/months)
-- Bands (multi-select)
-- Station filters: reporter (RX), txcall (TX)
-- QSO-like time window (default: 4 minutes)
-- Toggles for:
-    * Station-centric summaries (Top Reporters, Most-Heard TX)
-    * Distance metrics & best DX per band
-    * QSO-like reciprocity table
-    * Ingest status (row count, span)
-
-Main Panels
------------
-- SNR Distribution by Count
-- Monthly Spot Counts
-- Top Reporting Stations / Most Heard TX Stations
-- Geographic spread (unique grids)
-- Distance distribution & longest DX
-- Best DX per Band
-- Activity heatmap (Hour × Month)
-- TX vs. RX balance and QSO-like success rate
-
-Implementation Notes
---------------------
-- Heavy computations are pushed into SQL where practical.
-- Distance uses Maidenhead grid to coordinates (Haversine).
-- The UI degrades gracefully when the DB has no matching data.
-
-See Also
---------
-- pipelines/ingest.py for building the DuckDB database
-- tests/ for automated checks
 """
 
 import math
@@ -379,8 +311,13 @@ def reciprocal_heard(con, a: str, b: str, window_min: int,
 # --------------------------- Page & Sidebar UI ---------------------------
 
 st.set_page_config(page_title="wspr-ai-lite", layout="wide")
+
+# Sidebar: optional help
+show_help = st.sidebar.checkbox("Show Help / Instructions", value=False)
+
 st.title("wspr-ai-lite")
 
+# TODO: v0.3.0 - Move this to **/pages/99_about_this_app.py side bar page
 with st.expander("About this app"):
     st.markdown(
         """

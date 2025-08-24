@@ -80,7 +80,7 @@ Use the entry from CHANGELOG.md.
 
 ## Troubleshooting
 - invalid-publisher: Ensure Trusted Publisher matches repo/workflow.
-- app missing: Ensure wspr_app.py is packaged.
+- app missing: Ensure wspr_ai_lite.py is packaged.
 - Makefile errors: check for TAB indentation.
 - pre-commit failures: fix docstrings, run pre-commit run -a.
 
