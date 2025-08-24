@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 WSPR ingest pipeline for wspr-ai-lite.
 
@@ -90,7 +92,6 @@ See Also
 --------
 - tests/test_ingest.py, tests/test_ingest_io.py for unit tests & integration tests.
 """
-from __future__ import annotations
 
 import argparse
 import gzip
