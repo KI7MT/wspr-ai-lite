@@ -7,8 +7,8 @@ Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashbo
 - **Developer Setup** → See [DEV SETUP](developer-setup.md)
 - **Makefile Guide** → See [MAKEFILE](makefile.md)
 - **Testing** → See [TESTING](testing.md)
-- **Troubleshooting** → See [TROUBLESHOOTING](./troubleshooting.md)
-- **Change Log** → See [CHANGELOG](../CHANGELOG.md)
+- **Troubleshooting** → See [TROUBLESHOOTING](troubleshooting.md)
+- **Change Log** → See [CHANGELOG](CHANGELOG.md)
 
 ## ✨ About
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:

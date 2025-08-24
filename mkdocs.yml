@@ -39,6 +39,7 @@ nav:
   - Process Release: process-release.md
   - Troubleshooting: troubleshooting.md
   - Changelog: ../CHANGELOG.md
+  - License: ../LICENSE.md
 
 markdown_extensions:
   - admonition
