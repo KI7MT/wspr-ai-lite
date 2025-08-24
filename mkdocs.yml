@@ -35,6 +35,7 @@ nav:
   - Developer Setup: dev_setup.md
   - Makefile Guide: makefile.md
   - Testing: testing.md
+  - Process Release: process-release.md
   - Troubleshooting: troubleshooting.md
   - Changelog: ../CHANGELOG.md
 
