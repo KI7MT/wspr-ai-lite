@@ -40,7 +40,8 @@ Issues = "https://github.com/KI7MT/wspr-ai-lite/issues"
 Changelog = "https://github.com/KI7MT/wspr-ai-lite/blob/main/CHANGELOG.md"
 
 [project.scripts]
-wspr-lite = "wspr_ai_lite.cli:main"
+wspr-ai-lite = "wspr_ai_lite.cli:main"
+wspr-lite = "wspr_ai_lite.cli:deprecated_entrypoint"
 
 [tool.hatch.version]
 path = "src/wspr_ai_lite/__init__.py"

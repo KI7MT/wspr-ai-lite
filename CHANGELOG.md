@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-08-24
+### Changed
+- Default CLI command is now `wspr-ai-lite`.
+- Added transitional `wspr-lite` shim with deprecation warning.
+
+### Deprecated
+- The `wspr-lite` command will be removed in a future release.
+
+
 ## [0.1.9] - 2025-08-24
 ### Fixed
 - Added missing `import os` in `cli.py` (caused `wspr-lite ui` to crash).

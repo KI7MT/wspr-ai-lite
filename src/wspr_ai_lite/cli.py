@@ -28,6 +28,17 @@ def _app_path() -> Path:
     """Return the absolute path to the packaged Streamlit app (wspr_app.py)."""
     return Path(__file__).with_name("wspr_app.py")
 
+def deprecated_entrypoint() -> None:
+    """Temporary shim for the old `wspr-lite` command name.
+
+    Prints a deprecation warning and then calls main().
+    """
+    print(
+        "WARNING: The `wspr-lite` command conflicts with the official WSPR suite.\n"
+        "Please use the new command: `wspr-ai-lite`.\n",
+        flush=True,
+    )
+    main()
 
 def main() -> None:
     """Dispatch subcommands: `ingest` and `ui`."""
