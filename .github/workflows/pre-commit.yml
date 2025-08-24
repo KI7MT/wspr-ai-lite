@@ -3,6 +3,9 @@ name: pre-commit
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - 'site/**'
   pull_request:
     branches: [ main ]
 
