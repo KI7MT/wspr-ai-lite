@@ -26,9 +26,10 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - ⏱ Hourly activity heatmaps & yearly unique counts
 - 🚀 Works on **Windows, Linux, macOS** — no heavy server required.
 
----
-
 ## ✨ Features
+Designed to be portable, and lightweight, `wspr-ai-lite` can ne run RasperyPI's or an Enterprise Server.
+The portability of Python makes it OS agnostic. The only limiting factor is disk space. The more archives you elect to add, the larger the diskspace footprint becomes. In future releases, we'll provide resource utilization stats for CPU, RAM an storage.
+
 - Local DuckDB storage with efficient ingest + caching
 - Streamlit UI for interactive exploration
 - Distance/DX analysis with Maidenhead grid conversion
@@ -143,11 +144,11 @@ Pull requests are welcome!
 If you have feature ideas (e.g., new metrics, visualizations, or AI integrations), open an issue first to discuss.
 
 ## Roadmap
-- Phase 1: wspr-ai-lite (this project)
-- Lightweight, local-only DuckDB + Streamlit dashboard
-- Phase 2: wspr-ai-analytics
-- Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
-- Designed for heavier infrastructure and richer analysis
+- **Phase 1**: wspr-ai-lite (this project)
+  - Lightweight, local-only DuckDB + Streamlit dashboard
+- **Phase 2**: wspr-ai-analytics ( modernize [wspr-analytics](https://github.com/KI7MT/wspr-analytics) project )
+  - Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
+  - Designed for heavier infrastructure and richer analysis
 
 ## 📜 License
 This project is licensed under the MIT License. Open and free for amateur radio and research use.
