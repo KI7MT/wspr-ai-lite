@@ -32,7 +32,7 @@ theme:
 nav:
   - Home: index.md
   - User Setup & Usage: user-setup.md
-  - Developer Setup: dev_setup.md
+  - Developer Setup: developer-setup.md
   - Makefile Guide: makefile.md
   - Testing: testing.md
   - Process Release: process-release.md
