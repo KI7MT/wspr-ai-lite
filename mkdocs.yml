@@ -9,18 +9,8 @@ theme:
   name: material
   language: en
   palette:
-    - scheme: default
-      primary: blue
-      accent: indigo
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    - scheme: slate
-      primary: blue
-      accent: indigo
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+    primary: indigo
+
   features:
     - navigation.sections
     - navigation.expand
