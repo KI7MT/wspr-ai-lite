@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.6] - 2025-08-25
+### Chaangd
+- Fixed versioning for release as local script failed to update properly.
+- No other changes form v0.3.4 to 0.3.6
+
+[0.3.4]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.4...v0.3.6
+
+
 ## [0.3.4] - 2025-08-25
 
 ### Added
