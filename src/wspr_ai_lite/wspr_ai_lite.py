@@ -327,11 +327,11 @@ It uses a local DuckDB file and Streamlit.
 **How to use**
 1. Ingest data (once or as needed):
 
-       python pipelines/ingest.py --from 2014-07 --to 2014-07
+       wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
 
 2. Run this UI:
 
-       streamlit run app/wspr_app.py
+       wspr-ai-lite ui --db data/wspr.duckdb --port 8501
         """
     )
 
