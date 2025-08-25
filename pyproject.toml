@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wspr-ai-lite"
-version = "0.3.0ß"
+version = "0.3.0"
 requires-python = ">=3.11"
 readme = "README.md"
 description = "Lightweight WSPR analytics: DuckDB ingest + Streamlit dashboard."
