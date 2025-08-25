@@ -25,11 +25,9 @@ nav:
   - User Setup: user-setup.md
   - Developer Setup: developer-setup.md
   - Testing: testing.md
+  - Makefile: makefile.md
   - Troubleshooting: troubleshooting.md
   - Process Release: process-release.md
-  - Contributors: CONTRIBUTORS.md
-  - License: LICENSE.md
-  - Changelog: CHANGELOG.md
 
 markdown_extensions:
   - admonition
@@ -54,6 +52,13 @@ markdown_extensions:
 
 plugins:
   - search
+  - macros:
+      include_dir: docs/_ext         # adds docs/_ext to sys.path
+      modules:
+        - wspr_macros            # importable as a package from docs/_ext
+
+extra:
+  version: !ENV [WSPR_AI_LITE_VERSION, dev]
 
 # MkDocs serves content from the ./docs directory.
 # Make sure these files exist (copied from your repo):

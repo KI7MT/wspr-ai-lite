@@ -22,10 +22,24 @@
 #   make reset       # Clean EVERYTHING and rebuild fresh
 # ===================================================================
 
+PKG_NAME      ?= wspr-ai-lite
+
 PY      := python3
-PIP     := pip
 VENV    := .venv
 ACT     := . $(VENV)/bin/activate
+PIP     := $(PY) -m pip
+
+# Resolve version once at make invocation
+VERSION := $(shell $(PY) scripts/get_version.py)
+
+# smoke-test variables
+SMOKE_VENV    ?= .smoke-venv
+SMOKE_TMP     ?= .smoke-tmp
+SMOKE_DB      ?= $(SMOKE_TMP)/wspr.duckdb
+SMOKE_PY      := $(SMOKE_VENV)/bin/python
+SMOKE_PIP     := $(SMOKE_VENV)/bin/pip
+SMOKE_CLI     := $(SMOKE_VENV)/bin/wspr-ai-lite
+SMOKE_MONTH		?= 2014-07
 
 # -------------------------------------------------------------------
 # Colors
@@ -58,11 +72,37 @@ publish: ## Pulublish Package to PyPi Production Repository
 	@$(ACT); python -m build
 	@$(ACT); python -m twine upload dist/*
 
-setup-dev: venv ## Create venv, install dev deps, install pre-commit hooks
+setup-dev: venv ## Create venv, install runtime+dev+docs deps, install pre-commit hooks
 	@$(ACT); $(PIP) install --upgrade pip
-	@$(ACT); $(PIP) install -r requirements-dev.txt
+	@$(ACT); if [ -f requirements.txt ]; then \
+		echo "[setup-dev] Installing runtime deps"; \
+		$(PIP) install -r requirements.txt; \
+	fi
+	@$(ACT); if [ -f requirements-dev.txt ]; then \
+		echo "[setup-dev] Installing dev deps"; \
+		$(PIP) install -r requirements-dev.txt; \
+	fi
+	@$(ACT); if [ -f requirements-docs.txt ]; then \
+		echo "[setup-dev] Installing docs deps"; \
+		$(PIP) install -r requirements-docs.txt; \
+	fi
 	@$(ACT); pre-commit install
-	@echo "Dev environment ready (venv, deps, pre-commit hooks)."
+	@echo ''
+	@echo "Dev environment ready (venv, runtime+dev+docs deps, pre-commit hooks)."
+	@echo "To use venv, type: source .venv/bin/activate"
+	@echo ''
+
+# setup-dev: venv ## Create venv, install dev+docs deps, install pre-commit hooks
+# 	@$(ACT); $(PIP) install --upgrade pip
+# 	@$(ACT); $(PIP) install -r requirements-dev.txt
+# 	@$(ACT); if [ -f requirements-docs.txt ]; then \
+# 		echo "[setup-dev] Installing docs deps from requirements-docs.txt"; \
+# 		$(PIP) install -r requirements-docs.txt; \
+# 	else \
+# 		echo "[setup-dev] requirements-docs.txt not found (skipping docs deps)"; \
+# 	fi
+# 	@$(ACT); pre-commit install
+# 	@echo "Dev environment ready (venv, dev+docs deps, pre-commit hooks)."
 
 venv: ## Create Python virtual environment (.venv)
 	@test -d $(VENV) || ($(PY) -m venv $(VENV) && echo "Created $(VENV)")
@@ -115,11 +155,17 @@ reset: distclean ## Full reset: distclean + recreate venv + install deps + inges
 	@$(ACT); $(PY) pipelines/ingest.py --from 2014-07 --to 2014-07
 	@echo "Reset complete. Run: make run"
 
-docs-serve: ## Docs tasks (MkDocs)
-	@$(ACT); mkdocs serve
+docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
+	@echo "WSPR_AI_LITE_VERSION=$(VERSION)"
+	@$(ACT); PYTHONPATH=docs/_ext mkdocs serve
 
-docs-deploy: ## Deplot docs to hh-pages
-	@$(ACT); mkdocs gh-deploy --force
+# docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
+# 	@$(PIP) install -r requirements-docs.txt
+# 	@WSPR_AI_LITE_VERSION=$(shell $(PYTHON) -c "import wspr_ai_lite; print(wspr_ai_lite.__version__)") \
+# 		mkdocs serve
+
+# docs-deploy: ## Deplot docs to hh-pages
+# 	@$(ACT); mkdocs gh-deploy --force
 
 # =============================================================================
 # Smoke tests (automated)
@@ -131,17 +177,6 @@ docs-deploy: ## Deplot docs to hh-pages
 #     5) assert rowcount > 0
 #     6) verify UI app is packaged and Streamlit importable
 # =============================================================================
-
-SMOKE_VENV    ?= .smoke-venv
-SMOKE_TMP     ?= .smoke-tmp
-SMOKE_DB      ?= $(SMOKE_TMP)/wspr.duckdb
-
-SMOKE_PY      := $(SMOKE_VENV)/bin/python
-SMOKE_PIP     := $(SMOKE_VENV)/bin/pip
-SMOKE_CLI     := $(SMOKE_VENV)/bin/wspr-ai-lite
-SMOKE_MONTH		?= 2014-07
-
-PKG_NAME      ?= wspr-ai-lite
 
 .PHONY: smoke-test smoke-clean smoke-build smoke-install smoke-ingest smoke-verify smoke-ui-check
 

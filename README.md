@@ -1,5 +1,7 @@
 # 📡 wspr-ai-lite
 
+Current version: {{ config.extra.version | default("dev") }}
+
 **Lightweight WSPR analytics rendering tool employing DuckDB + Streamlit**
 
 Designed to be portable, and lightweight, `wspr-ai-lite` can be run on RasperyPI's or Enterprise Servers.

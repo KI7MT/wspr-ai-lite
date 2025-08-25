@@ -1,5 +1,7 @@
 # 📚 WSPR AI Lite Documentation
 
+Current version: {{ config.extra.version }} | Build time: {{ build_time() }}
+
 Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashboard built with **DuckDB** and **Streamlit**.
 
 # WSPR-AI-Lite Documentation
@@ -13,8 +15,6 @@ Welcome to the documentation for **WSPR-AI-Lite** — a lightweight tool for exp
 - [Process Release](process-release.md) — Release workflow & PyPI publishing
 - [Testing](testing.md) — Unit tests, smoke tests, CI details
 - [Troubleshooting](troubleshooting.md) — Common issues & fixes
-- [Changelog](CHANGELOG.md) — Project history & version notes
-- [License](LICENSE.md) — License terms
 - [Code of Conduct](https://github.com/KI7MT/wspr-ai-lite/blob/main/CODE_OF_CONDUCT.md)
 - [Security Policy](https://github.com/KI7MT/wspr-ai-lite/blob/main/SECURITY.md)
 
@@ -42,6 +42,13 @@ pip install mkdocs mkdocs-material mkdocs-material-extensions
 Serve locally:
 
 ```bash
+# if no version is stipulated, the version will fall back to the last --tagged version
+mkdocs serve
+```
+
+Set a specific Version when bulding
+```bash
+WSPR_AI_LITE_VERSION=$(python -c "import wspr_ai_lite as m; print(getattr(m,'__version__','dev'))") \
 mkdocs serve
 ```
 
