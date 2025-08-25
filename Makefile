@@ -150,10 +150,12 @@ reset: distclean ## Full reset: distclean + recreate venv + install deps + inges
 	@$(ACT); $(PY) pipelines/ingest.py --from 2014-07 --to 2014-07
 	@echo "Reset complete. Run: make run"
 
+docs-check-macros: ## Verify wspr_macros import path
+	@PYTHONPATH=docs/_ext python -c "import importlib.util; import sys; print('wspr_macros importable:', importlib.util.find_spec('wspr_macros') is not None)"
+
 docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
 	@echo "WSPR_AI_LITE_VERSION=$(VERSION)"
-	@WSPR_AI_LITE_VERSION=$(VERSION)
-	PYTHONPATH=docs/_ext WSPR_AI_LITE_VERSION="$$VERSION" mkdocs serve
+	@WSPR_AI_LITE_VERSION=$(VERSION) PYTHONPATH=docs/_ext mkdocs serve
 
 # docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
 # 	@VERSION=$$($(PY) -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])"); \

@@ -48,10 +48,14 @@ jobs:
       - name: Compute docs version
         run: echo "WSPR_AI_LITE_VERSION=$(python -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")" >> $GITHUB_ENV
 
+      - name: Sanity import macros
+        run: python -c "import sys; sys.path.insert(0,'docs/_ext'); import wspr_macros; print('wspr_macros import OK')"
+
       - name: Build site
         run: mkdocs build --strict
         env:
           WSPR_AI_LITE_VERSION: ${{ env.WSPR_AI_LITE_VERSION }}
+          PYTHONPATH: docs/_ext
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

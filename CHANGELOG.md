@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.9] - 2025-08-25
+
+### Fixed
+- Documentation build on CI: ensure local macros (`docs/_ext/wspr_macros`) are discoverable by adding `PYTHONPATH=docs/_ext`.
+- Prevent `mkdocs-macros-plugin` from trying to `pip install wspr_macros`.
+
+### Changed
+- Bumped project version to `0.2.9` in `pyproject.toml` to realign tags, releases, and PyPI.
+
+### Added
+- Guard in CI workflow to sanity-check `wspr_macros` import before running MkDocs build.
+- Confirmed docs version injection from `pyproject.toml` → GitHub Actions → MkDocs (`extra.version`) is working end-to-end.
+
+---
+
+[0.2.9]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.2.8...v0.2.9
+
 ## [0.2.8] - 2025-08-25
 
 ### Added
