@@ -22,15 +22,17 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
+
       - name: Verify tag matches package version
         run: |
           set -euo pipefail
           TAG="${GITHUB_REF_NAME#v}"
           echo "Tag: $TAG"
-          PKG_VERSION=$(python -c 'import re, pathlib; txt=pathlib.Path("src/wspr_ai_lite/__init__.py").read_text(encoding="utf-8"); m=re.search(r"__version__\s*=\s*\"([^\"]+)\"", txt); print(m.group(1) if m else "")')
-          echo "Package version: $PKG_VERSION"
-          [ -n "$PKG_VERSION" ] || { echo "Could not read __version__"; exit 1; }
-          test "$TAG" = "$PKG_VERSION" || { echo "Tag $TAG != package $PKG_VERSION"; exit 1; }
+          PYPROJ_VERSION=$(python -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")
+          echo "Version in pyproject.toml: $PYPROJ_VERSION"
+          [ -n "$PYPROJ_VERSION" ] || { echo "Could not read version from pyproject.toml"; exit 1; }
+          test "$TAG" = "$PYPROJ_VERSION" || { echo "Tag $TAG != pyproject $PYPROJ_VERSION"; exit 1; }
+
       - name: Build wheel + sdist
         run: |
           python -m pip install --upgrade pip build

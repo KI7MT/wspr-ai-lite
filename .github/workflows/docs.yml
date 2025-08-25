@@ -50,8 +50,7 @@ jobs:
         run: echo "WSPR_AI_LITE_VERSION=$(python scripts/get_version.py)" >> $GITHUB_ENV
 
       - name: Build site
-        run: |
-          PYTHONPATH=docs/_ext mkdocs build --strict
+        run: mkdocs build --strict
         env:
           WSPR_AI_LITE_VERSION: ${{ env.WSPR_AI_LITE_VERSION }}
 

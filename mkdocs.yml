@@ -53,9 +53,9 @@ markdown_extensions:
 plugins:
   - search
   - macros:
-      include_dir: docs/_ext         # adds docs/_ext to sys.path
+      include_dir: docs/_ext
       modules:
-        - wspr_macros            # importable as a package from docs/_ext
+        - wspr_macros
 
 extra:
   version: !ENV [WSPR_AI_LITE_VERSION, dev]

@@ -72,20 +72,11 @@ publish: ## Pulublish Package to PyPi Production Repository
 	@$(ACT); python -m build
 	@$(ACT); python -m twine upload dist/*
 
-setup-dev: venv ## Create venv, install runtime+dev+docs deps, install pre-commit hooks
+setup-dev: venv ## Create venv, install dev+docs deps, install pre-commit hooks
 	@$(ACT); $(PIP) install --upgrade pip
-	@$(ACT); if [ -f requirements.txt ]; then \
-		echo "[setup-dev] Installing runtime deps"; \
-		$(PIP) install -r requirements.txt; \
-	fi
-	@$(ACT); if [ -f requirements-dev.txt ]; then \
-		echo "[setup-dev] Installing dev deps"; \
-		$(PIP) install -r requirements-dev.txt; \
-	fi
-	@$(ACT); if [ -f requirements-docs.txt ]; then \
-		echo "[setup-dev] Installing docs deps"; \
-		$(PIP) install -r requirements-docs.txt; \
-	fi
+	@$(ACT); $(PIP) install -r requirements.txt
+	@$(ACT); $(PIP) install -r requirements-dev.txt
+	@$(ACT); $(PIP) install -r requirements-docs.txt
 	@$(ACT); pre-commit install
 	@echo ''
 	@echo "Dev environment ready (venv, runtime+dev+docs deps, pre-commit hooks)."
@@ -156,8 +147,9 @@ reset: distclean ## Full reset: distclean + recreate venv + install deps + inges
 	@echo "Reset complete. Run: make run"
 
 docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
-	@echo "WSPR_AI_LITE_VERSION=$(VERSION)"
-	@$(ACT); PYTHONPATH=docs/_ext mkdocs serve
+	@VERSION=$$($(PY) -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])"); \
+	echo "WSPR_AI_LITE_VERSION=$$VERSION"; \
+	PYTHONPATH=docs/_ext WSPR_AI_LITE_VERSION="$$VERSION" mkdocs serve
 
 # docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
 # 	@$(PIP) install -r requirements-docs.txt
