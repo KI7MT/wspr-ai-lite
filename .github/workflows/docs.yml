@@ -46,8 +46,7 @@ jobs:
           pip install mkdocs-material mkdocs-material-extensions mkdocs-macros-plugin pyyaml-env-tag
 
       - name: Compute docs version
-        id: ver
-        run: echo "WSPR_AI_LITE_VERSION=$(python scripts/get_version.py)" >> $GITHUB_ENV
+        run: echo "WSPR_AI_LITE_VERSION=$(python -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")" >> $GITHUB_ENV
 
       - name: Build site
         run: mkdocs build --strict

@@ -18,16 +18,11 @@ def define_env(env):
     # Simple build timestamp macro
     env.macro(lambda: datetime.now(UTC).isoformat(timespec="seconds"), name="build_time")
 
-def on_post_build(plugin):
+def on_post_build(_plugin) -> None:
     """
-    Called after the site is built. `plugin` is the MacrosPlugin instance.
+    Called after the site is built. We just log the version that MkDocs
+    also reads via !ENV to avoid reaching into plugin internals.
     """
-    try:
-        cfg = plugin.config                       # MkDocs Config object (dict-like)
-        extra = cfg.get("extra", {}) if hasattr(cfg, "get") else cfg["extra"]
-        version = extra.get("version", "dev")
-        # Do whatever you wanted here; for now, just log:
-        print(f"[macros] post_build: version={version}")
-    except Exception as e:
-        # Never fail the build because of a post-build log
-        print(f"[macros] post_build: skipped ({e})")
+    import os
+    v = os.environ.get("WSPR_AI_LITE_VERSION", "dev")
+    print(f"[macros] post_build: version={v}")

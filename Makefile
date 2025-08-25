@@ -29,8 +29,10 @@ VENV    := .venv
 ACT     := . $(VENV)/bin/activate
 PIP     := $(PY) -m pip
 
-# Resolve version once at make invocation
-VERSION := $(shell $(PY) scripts/get_version.py)
+# ---- Version (resolve at recipe runtime, not parse time) ----
+# Single source of truth: pyproject.toml
+# Resolve version once at make invocation (Python ≥ 3.11 required)
+VERSION := $(shell $(PY) -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")
 
 # smoke-test variables
 SMOKE_VENV    ?= .smoke-venv
@@ -149,17 +151,14 @@ reset: distclean ## Full reset: distclean + recreate venv + install deps + inges
 	@echo "Reset complete. Run: make run"
 
 docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
-	@VERSION=$$($(PY) -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])"); \
-	echo "WSPR_AI_LITE_VERSION=$$VERSION"; \
+	@echo "WSPR_AI_LITE_VERSION=$(VERSION)"
+	@WSPR_AI_LITE_VERSION=$(VERSION)
 	PYTHONPATH=docs/_ext WSPR_AI_LITE_VERSION="$$VERSION" mkdocs serve
 
 # docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
-# 	@$(PIP) install -r requirements-docs.txt
-# 	@WSPR_AI_LITE_VERSION=$(shell $(PYTHON) -c "import wspr_ai_lite; print(wspr_ai_lite.__version__)") \
-# 		mkdocs serve
-
-# docs-deploy: ## Deplot docs to hh-pages
-# 	@$(ACT); mkdocs gh-deploy --force
+# 	@VERSION=$$($(PY) -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])"); \
+# 	echo "WSPR_AI_LITE_VERSION=$$VERSION"; \
+PYTHONPATH=docs/_ext WSPR_AI_LITE_VERSION="$$VERSION" mkdocs serve
 
 # =============================================================================
 # Smoke tests (automated)
@@ -209,9 +208,9 @@ smoke-clean: ## Remove smoke-test artifacts (venv + tmp DB)
 
 # Convenience: deeper clean that also removes smoke artifacts
 .PHONY: dist-clean-all
-dist-clean-all: dist-clean ## Deep clean + remove smoke artifacts
+dist-clean-all: distclean ## Deep clean + remove smoke artifacts
 	@rm -rf .smoke-venv .smoke-tmp
-	@echo "🧼 dist-clean-all: removed smoke artifacts."
+	@echo "dist-clean-all: also removed smoke artifacts."
 
 .PHONY: smoke-test-pypi
 smoke-test-pypi: smoke-clean ## Install from PyPI and run verify+ui-check

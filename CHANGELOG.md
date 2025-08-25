@@ -6,6 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2025-08-25
+
+### Added
+- GitHub Release automation:
+- CI now auto-creates GitHub Releases on new tags.
+- Release artifacts (.whl, .tar.gz) are attached automatically.
+- Auto-generated release notes enabled.
+
+### Changed
+- CI/CD workflows: Refactored to enforce version consistency (pyproject.toml vs Git tag) before publishing.
+- Documentation: MkDocs now consistently shows the correct version ({{ config.extra.version }} injected via environment).
+
+---
+
+[0.2.6]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.2.6...v0.2.8
+
+### Fixed
+	•	Removed dependency on scripts/get_version.py; version is now resolved directly from pyproject.toml.
+	•	Fixed docs build issues caused by macros module import path handling.
+  - Footer links (going forward, so GitHub auto-links diffs):
+
 ## [0.2.6] - 2025-08-24
 ### Fixed
 - Declared required runtime dependencies (`duckdb`, `streamlit`, etc.) in `pyproject.toml`.
