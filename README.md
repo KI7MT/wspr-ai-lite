@@ -12,8 +12,6 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![Docs](https://img.shields.io/badge/docs-github_pages-blue)](https://KI7MT.github.io/wspr-ai-lite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
----
-
 ## Workflows and Packaging Status
 
 **Versions**
