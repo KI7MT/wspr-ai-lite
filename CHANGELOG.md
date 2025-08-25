@@ -6,11 +6,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2025-08-25
-### 🚀 Highlights
-- Start of the **0.3.x roadmap series**, focusing on stability and release automation.
+## [0.3.2] - 2025-08-25
+### Fixed
+- Corrected release workflow configuration:
+  - Removed duplicate/unused GitHub Actions workflow (`action-gh-release.yml`)
+  - Ensured `release.yml` is the single source for PyPI + GitHub Releases
+- Addressed issues with tag handling and publishing sequence
 
-### 🔧 Changed
+### Notes
+- This is a maintenance release to stabilize CI/CD before continuing new feature development.
+
+---
+
+[0.3.1]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.1...v0.3.2
+
+## [0.3.1] - 2025-08-25
+### Fixed
+- Version tage had special charchter in it.
+
+---
+
+[0.3.0]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.0...v0.3.1
+
+## [0.3.1] - 2025-08-25
+### Fixed
+- Corrected version string issue introduced in v0.3.0 (bad character in tag/pyproject).
+
+### Changed
 - Switched versioning to **single source of truth** in `pyproject.toml`.
 - Improved GitHub Actions workflows:
   - Separated PyPI publishing (`release.yml`) from GitHub Release creation (`action-gh-release.yml`).
@@ -21,11 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Docs now correctly show `Current version: x.y.z` instead of `dev`.
   - Added environment-variable–based version injection (`extra.version`).
 
-### 🐛 Fixed
+### Fixed
 - Removed duplicate/unwanted PyPI publishing from `action-gh-release.yml`.
 - Corrected missing README on PyPI by setting `readme = "README.md"` in `pyproject.toml`.
 
-### 📦 Packaging
+### Packaging
 - Dependency metadata corrected in `pyproject.toml` (`duckdb`, `streamlit`, etc.).
 - Classifiers updated for Python 3.11–3.13.
 - Smoke tests now validate `duckdb` ingestion end-to-end.
