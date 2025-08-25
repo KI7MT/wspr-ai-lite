@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2025-08-25
+
+### Fixed
+- Removed deprecated license metadata (`project.license` as table + classifier).
+  - Now using SPDX expression (`license = "MIT"`) and `license-files` in `pyproject.toml`.
+  - Eliminates `SetuptoolsDeprecationWarning` during builds.
+- Cleaned up Makefile targets with sensible defaults for `ingest`, `ui`, and `quickstart`.
+
+### Improved
+- Smoke tests now run cleanly without warnings.
+- Packaging metadata fully compliant with future setuptools (>=77.0) requirements.
+
+[0.3.3]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.2...v0.3.3
+
 ## [0.3.2] - 2025-08-25
 ### Fixed
 - Corrected release workflow configuration:
