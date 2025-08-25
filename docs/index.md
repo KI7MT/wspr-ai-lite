@@ -1,7 +1,5 @@
 # 📚 WSPR AI Lite Documentation
 
-Current version: {{ config.extra.version }} | Build time: {{ build_time() }}
-
 Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashboard built with **DuckDB** and **Streamlit**.
 
 # WSPR-AI-Lite Documentation
