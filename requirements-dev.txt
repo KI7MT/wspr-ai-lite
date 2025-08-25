@@ -6,3 +6,4 @@ pre-commit
 interrogate
 pydocstyle
 click>=8.1
+commitizen>=3.30

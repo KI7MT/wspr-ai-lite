@@ -78,6 +78,12 @@ ignore-private = true
 exclude = [".venv", "data", "site", "build", "dist", "tmp", "temp", ".pytest_cache", "__pycache__"]
 color = true
 
-
 [tool.setuptools.package-data]
 "wspr_ai_lite.mcp" = ["manifest.json"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.0"            # Commitizen needs a version; it won’t bump unless you use cz bump
+tag_format = "v$version"
+# Optional: restrict scopes you commonly use
+# allowed_scopes = ["ui","ingest","tools","docs","mcp","build","ci"]

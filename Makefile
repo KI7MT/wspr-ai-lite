@@ -52,14 +52,16 @@ help:
 
 # ---- Dev env & installs ------------------------------------------------------
 
-setup-dev: venv ## Create venv, install runtime+dev+docs deps, install pre-commit hooks
+setup-dev: venv ## Create venv, install dev+docs deps, install pre-commit hooks
 	@$(ACT); $(PIP) install --upgrade pip
 	@$(ACT); $(PIP) install -r requirements.txt
 	@$(ACT); $(PIP) install -r requirements-dev.txt
-	@$(ACT); $(PIP) install -r requirements-docs.txt
-	@$(ACT); pre-commit install
+	@$(ACT); if [ -f requirements-docs.txt ]; then $(PIP) install -r requirements-docs.txt; fi
+	@$(ACT); pre-commit install --hook-type pre-commit
+	@$(ACT); pre-commit install --hook-type commit-msg
 	@echo ''
-	@echo -e $(C_G)'Dev environment ready.'$(C_NC) 'Activate with:' $(C_Y)'source .venv/bin/activate'$(C_NC)
+	@echo "Dev environment ready."
+	@echo "Hooks installed: pre-commit + commit-msg (Commitizen)."
 	@echo ''
 
 venv: ## Create Python virtual environment (.venv)

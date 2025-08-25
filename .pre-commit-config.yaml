@@ -43,3 +43,10 @@ repos:
         entry: interrogate
         args: ['-c', 'pyproject.toml', 'pipelines']
         pass_filenames: false
+
+# --- Conventional Commits check ---
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
