@@ -5,3 +5,4 @@ pytest
 pre-commit
 interrogate
 pydocstyle
+click>=8.1

@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-from __future__ import annotations
 
 """
 Streamlit UI for wspr-ai-lite.
 
 Visualizes local WSPR data stored in DuckDB (``data/wspr.duckdb``).
-Provides station-centric views, SNR distributions, monthly trends,
-activity heatmaps, DX/distance analysis (Maidenhead → lat/lon), and
-a QSO-like reciprocity finder within a configurable time window.
+Uses the canonical schema:
+
+  spot_id, timestamp (UTC), reporter, reporter_grid, snr_db, freq_mhz,
+  tx_call, tx_grid, power_dbm, drift_hz_per_min, distance_km, azimuth_deg,
+  band_code, rx_version, code
+
+All time-derived fields (year, month, hour) are computed via DuckDB EXTRACT().
+Band filtering/display uses a band code → human label mapping.
 """
 
 import math
@@ -78,134 +83,204 @@ def grid_distance_km(tx_grid: str, rx_grid: str) -> Optional[float]:
     return haversine_km(lat1, lon1, lat2, lon2)
 
 
-# ----------------------------- Query helpers -----------------------------
+# ----------------------------- Band helpers -----------------------------
+
+_BAND_LABELS = {
+    -1: "LF",
+     0: "MF",
+     1: "160m",   2: "160m",
+     3: "80m",
+     5: "60m",
+     7: "40m",
+    10: "30m",
+    14: "20m",
+    18: "17m",
+    21: "15m",
+    24: "12m",
+    28: "10m",
+    50: "6m",
+    70: "4m",
+   144: "2m",
+   220: "1.25m",
+   432: "70cm",
+  1240: "23cm",
+}
+
+def band_label(code: int | None) -> str:
+    """Map band_code to human label (e.g., 14 → '20m')."""
+    if code is None:
+        return "unknown"
+    return _BAND_LABELS.get(int(code), f"{int(code)} MHz")
+
+def band_code_from_label(label: str) -> int | None:
+    """Map human label back to band_code."""
+    for k, v in _BAND_LABELS.items():
+        if v.lower() == label.lower():
+            return k
+    if label.lower().endswith("mhz"):
+        try:
+            return int(label[:-3].strip())
+        except Exception:
+            pass
+    return None
+
+
+# ----------------------------- Query helpers (canonical schema) -----------------------------
 
 def get_distinct_years(con: duckdb.DuckDBPyConnection) -> List[int]:
-    """Docstring: This is to make pre-commit happy"""
-    return [r[0] for r in con.execute("SELECT DISTINCT year FROM spots ORDER BY year").fetchall()]
+    """List of years present (derived from `timestamp`)."""
+    return [
+        r[0] for r in con.execute(
+            "SELECT DISTINCT CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER) AS yr "
+            "FROM spots ORDER BY yr"
+        ).fetchall()
+    ]
 
 
 def get_distinct_bands(con: duckdb.DuckDBPyConnection, year: int) -> List[str]:
-    """Docstring: This is to make pre-commit happy"""
-    return [r[0] for r in con.execute("SELECT DISTINCT band FROM spots WHERE year=? ORDER BY band", [year]).fetchall()]
+    """Band labels for a given year (derived from band_code)."""
+    codes = [
+        r[0] for r in con.execute(
+            "SELECT DISTINCT band_code "
+            "FROM spots WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? "
+            "ORDER BY band_code",
+            [year],
+        ).fetchall()
+    ]
+    return [band_label(c) for c in codes]
 
 
-def get_total_spots(con: duckdb.DuckDBPyConnection, year: int, band: str) -> int:
-    """Docstring: This is to make pre-commit happy"""
-    return con.execute("SELECT COUNT(*) FROM spots WHERE year=? AND band=?", [year, band]).fetchone()[0]
+def get_total_spots(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> int:
+    """Total rows for selected year + band label."""
+    code = band_code_from_label(band_label_str)
+    return con.execute(
+        "SELECT COUNT(*) FROM spots "
+        "WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?",
+        [year, code],
+    ).fetchone()[0]
 
 
-def get_snr_histogram(con: duckdb.DuckDBPyConnection, year: int, band: str) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_snr_histogram(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> pd.DataFrame:
+    """Histogram of snr_db counts for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
-        SELECT snr, COUNT(*) AS n
+        SELECT snr_db AS snr, COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=?
-        GROUP BY snr
-        ORDER BY snr
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
+        GROUP BY snr_db
+        ORDER BY snr_db
         """,
-        [year, band],
+        [year, code],
     ).fetchdf()
 
 
-def get_monthly_counts(con: duckdb.DuckDBPyConnection, year: int, band: str) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_monthly_counts(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> pd.DataFrame:
+    """Monthly counts for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
-        SELECT month, COUNT(*) AS n
+        SELECT CAST(EXTRACT(MONTH FROM timestamp) AS INTEGER) AS month, COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=?
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
         GROUP BY month
         ORDER BY month
         """,
-        [year, band],
+        [year, code],
     ).fetchdf()
 
 
-def get_top_reporters(con: duckdb.DuckDBPyConnection, year: int, band: str, limit: int = 50) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_top_reporters(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str, limit: int = 50) -> pd.DataFrame:
+    """Top RX callsigns by count for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
         SELECT reporter, COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=?
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
         GROUP BY reporter
         ORDER BY n DESC
         LIMIT ?
         """,
-        [year, band, limit],
+        [year, code, limit],
     ).fetchdf()
 
 
-def get_most_heard_tx(con: duckdb.DuckDBPyConnection, year: int, band: str, limit: int = 50) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_most_heard_tx(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str, limit: int = 50) -> pd.DataFrame:
+    """Most-heard TX callsigns for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
         SELECT
-          txcall AS tx,
+          tx_call AS tx,
           COUNT(*) AS n,
           COUNT(DISTINCT reporter) AS unique_rx
         FROM spots
-        WHERE year=? AND band=?
-        GROUP BY txcall
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
+        GROUP BY tx_call
         ORDER BY n DESC
         LIMIT ?
         """,
-        [year, band, limit],
+        [year, code, limit],
     ).fetchdf()
 
 
-def get_geographic_spread(con: duckdb.DuckDBPyConnection, year: int, band: str) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_geographic_spread(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> pd.DataFrame:
+    """Unique grid counts (RX/TX) for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
         SELECT
           COUNT(DISTINCT reporter_grid) AS unique_rx_grids,
           COUNT(DISTINCT tx_grid)       AS unique_tx_grids
         FROM spots
-        WHERE year=? AND band=?
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
         """,
-        [year, band],
+        [year, code],
     ).fetchdf()
 
 
-def get_avg_snr_by_month(con: duckdb.DuckDBPyConnection, year: int, band: str) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_avg_snr_by_month(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> pd.DataFrame:
+    """Average snr_db by month for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
-        SELECT month, AVG(snr) AS avg_snr
+        SELECT CAST(EXTRACT(MONTH FROM timestamp) AS INTEGER) AS month, AVG(snr_db) AS avg_snr
         FROM spots
-        WHERE year=? AND band=?
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
         GROUP BY month
         ORDER BY month
         """,
-        [year, band],
+        [year, code],
     ).fetchdf()
 
 
-def get_activity_by_hour_month(con: duckdb.DuckDBPyConnection, year: int, band: str) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+def get_activity_by_hour_month(con: duckdb.DuckDBPyConnection, year: int, band_label_str: str) -> pd.DataFrame:
+    """Counts by (hour, month) for year+band."""
+    code = band_code_from_label(band_label_str)
     return con.execute(
         """
-        SELECT EXTRACT(HOUR FROM ts) AS hour, month, COUNT(*) AS n
+        SELECT
+          CAST(EXTRACT(HOUR  FROM timestamp) AS INTEGER) AS hour,
+          CAST(EXTRACT(MONTH FROM timestamp) AS INTEGER) AS month,
+          COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=?
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
         GROUP BY month, hour
         ORDER BY month, hour
         """,
-        [year, band],
+        [year, code],
     ).fetchdf()
 
 
 def get_unique_counts_by_year(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+    """Distinct RX/TX counts per year (derived from timestamp)."""
     return con.execute(
         """
         SELECT
-          year,
+          CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER) AS year,
           COUNT(DISTINCT reporter) AS unique_rx,
-          COUNT(DISTINCT txcall)   AS unique_tx
+          COUNT(DISTINCT tx_call)  AS unique_tx
         FROM spots
         GROUP BY year
         ORDER BY year
@@ -215,24 +290,29 @@ def get_unique_counts_by_year(con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
 
 # -------- Station-centric helpers (TX/RX stats + reciprocal heard) --------
 
-def my_tx_heard(con, year: int, band: str, my: str, by_rx: Optional[str]) -> tuple[int, pd.DataFrame]:
-    """Docstring: This is to make pre-commit happy"""
+def my_tx_heard(con, year: int, band_label_str: str, my: str, by_rx: Optional[str]) -> tuple[int, pd.DataFrame]:
+    """As TX: how often I (my callsign) was heard, optionally by a specific RX."""
     my = my.upper().strip()
-    params = [year, band, my]
+    code = band_code_from_label(band_label_str)
+    params = [year, code, my]
     rx_filter = ""
     if by_rx and by_rx.strip():
         rx_filter = " AND reporter = ? "
         params.append(by_rx.upper().strip())
 
     total = con.execute(
-        f"SELECT COUNT(*) FROM spots WHERE year=? AND band=? AND txcall=? {rx_filter}", params
+        f"""
+        SELECT COUNT(*) FROM spots
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=? AND tx_call=? {rx_filter}
+        """,
+        params,
     ).fetchone()[0]
 
     df = con.execute(
         f"""
         SELECT reporter AS rx, COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=? AND txcall=? {rx_filter}
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=? AND tx_call=? {rx_filter}
         GROUP BY reporter
         ORDER BY n DESC
         LIMIT 100
@@ -242,25 +322,30 @@ def my_tx_heard(con, year: int, band: str, my: str, by_rx: Optional[str]) -> tup
     return total, df
 
 
-def my_rx_heard(con, year: int, band: str, my: str, of_tx: Optional[str]) -> tuple[int, pd.DataFrame]:
-    """Docstring: This is to make pre-commit happy"""
+def my_rx_heard(con, year: int, band_label_str: str, my: str, of_tx: Optional[str]) -> tuple[int, pd.DataFrame]:
+    """As RX: how often I (my callsign) heard others, optionally a specific TX."""
     my = my.upper().strip()
-    params = [year, band, my]
+    code = band_code_from_label(band_label_str)
+    params = [year, code, my]
     tx_filter = ""
     if of_tx and of_tx.strip():
-        tx_filter = " AND txcall = ? "
+        tx_filter = " AND tx_call = ? "
         params.append(of_tx.upper().strip())
 
     total = con.execute(
-        f"SELECT COUNT(*) FROM spots WHERE year=? AND band=? AND reporter=? {tx_filter}", params
+        f"""
+        SELECT COUNT(*) FROM spots
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=? AND reporter=? {tx_filter}
+        """,
+        params,
     ).fetchone()[0]
 
     df = con.execute(
         f"""
-        SELECT txcall AS tx, COUNT(*) AS n
+        SELECT tx_call AS tx, COUNT(*) AS n
         FROM spots
-        WHERE year=? AND band=? AND reporter=? {tx_filter}
-        GROUP BY txcall
+        WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=? AND reporter=? {tx_filter}
+        GROUP BY tx_call
         ORDER BY n DESC
         LIMIT 100
         """,
@@ -272,40 +357,48 @@ def my_rx_heard(con, year: int, band: str, my: str, of_tx: Optional[str]) -> tup
 def reciprocal_heard(con, a: str, b: str, window_min: int,
                      require_same_band: bool,
                      year_filter: Optional[int],
-                     band_filter: Optional[str]) -> pd.DataFrame:
-    """Docstring: This is to make pre-commit happy"""
+                     band_filter_label: Optional[str]) -> pd.DataFrame:
+    """QSO-like: A heard B and B heard A within a time window (minutes)."""
     a = a.upper().strip()
     b = b.upper().strip()
     where = [
         "s1.reporter = ?",
-        "s1.txcall   = ?",
+        "s1.tx_call  = ?",
         "s2.reporter = ?",
-        "s2.txcall   = ?",
-        "ABS(DATEDIFF('minute', s1.ts, s2.ts)) <= ?",
+        "s2.tx_call  = ?",
+        "ABS(DATEDIFF('minute', s1.timestamp, s2.timestamp)) <= ?",
     ]
     params: list = [a, b, b, a, window_min]
 
     if year_filter is not None:
-        where += ["s1.year = ?", "s2.year = ?"]
+        where += [
+            "CAST(EXTRACT(YEAR FROM s1.timestamp) AS INTEGER) = ?",
+            "CAST(EXTRACT(YEAR FROM s2.timestamp) AS INTEGER) = ?",
+        ]
         params += [year_filter, year_filter]
-    if band_filter is not None:
-        where += ["s1.band = ?", "s2.band = ?"]
-        params += [band_filter, band_filter]
+    if band_filter_label is not None:
+        bc = band_code_from_label(band_filter_label)
+        where += ["s1.band_code = ?", "s2.band_code = ?"]
+        params += [bc, bc]
     if require_same_band:
-        where.append("s1.band = s2.band")
+        where.append("s1.band_code = s2.band_code")
 
     sql = f"""
         SELECT
-            s1.ts AS ts_a, s1.band AS band_a, s1.snr AS snr_a,
-            s2.ts AS ts_b, s2.band AS band_b, s2.snr AS snr_b,
-            ABS(DATEDIFF('minute', s1.ts, s2.ts)) AS dt_min
+            s1.timestamp AS ts_a, s1.band_code AS band_a, s1.snr_db AS snr_a,
+            s2.timestamp AS ts_b, s2.band_code AS band_b, s2.snr_db AS snr_b,
+            ABS(DATEDIFF('minute', s1.timestamp, s2.timestamp)) AS dt_min
         FROM spots s1
         JOIN spots s2 ON 1=1
         WHERE {' AND '.join(where)}
         ORDER BY dt_min ASC, ts_a ASC
         LIMIT 200
     """
-    return con.execute(sql, params).fetchdf()
+    df = con.execute(sql, params).fetchdf()
+    if not df.empty:
+        df["band_a"] = df["band_a"].map(band_label)
+        df["band_b"] = df["band_b"].map(band_label)
+    return df
 
 
 # --------------------------- Page & Sidebar UI ---------------------------
@@ -317,7 +410,6 @@ show_help = st.sidebar.checkbox("Show Help / Instructions", value=False)
 
 st.title("wspr-ai-lite")
 
-# TODO: v0.3.0 - Move this to **/pages/99_about_this_app.py side bar page
 with st.expander("About this app"):
     st.markdown(
         """
@@ -372,7 +464,13 @@ with st.sidebar:
 
     st.markdown("---")
     st.header("Distance Options")
-    max_rows_distance = st.number_input("Max Rows for Distance Calculations", min_value=1000, max_value=1_000_000, value=100_000, step=10_000)
+    max_rows_distance = st.number_input(
+        "Max Rows for Distance Calculations",
+        min_value=1000,
+        max_value=1_000_000,
+        value=100_000,
+        step=10_000,
+    )
 
 # ---------------------- Overview panels ----------------------
 
@@ -404,8 +502,16 @@ with col3:
 
 st.subheader("Top Reporting Stations")
 
-unique_rx = con.execute("SELECT COUNT(DISTINCT reporter) FROM spots WHERE year=? AND band=?", [year, band]).fetchone()[0]
-unique_tx = con.execute("SELECT COUNT(DISTINCT txcall) FROM spots WHERE year=? AND band=?", [year, band]).fetchone()[0]
+unique_rx = con.execute(
+    "SELECT COUNT(DISTINCT reporter) FROM spots "
+    "WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?",
+    [year, band_code_from_label(band)],
+).fetchone()[0]
+unique_tx = con.execute(
+    "SELECT COUNT(DISTINCT tx_call) FROM spots "
+    "WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?",
+    [year, band_code_from_label(band)],
+).fetchone()[0]
 
 c1, c2 = st.columns(2)
 with c1:
@@ -504,12 +610,12 @@ st.header("Distance & DX")
 
 df_dist_src = con.execute(
     """
-    SELECT ts, band, snr, reporter, reporter_grid, txcall, tx_grid
+    SELECT timestamp, band_code, snr_db, reporter, reporter_grid, tx_call, tx_grid
     FROM spots
-    WHERE year=? AND band=?
+    WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=? AND band_code=?
     LIMIT ?
     """,
-    [year, band, 100000],
+    [year, band_code_from_label(band), int(max_rows_distance)],
 ).fetchdf()
 
 if df_dist_src.empty:
@@ -533,18 +639,19 @@ else:
         # Longest DX
         idx_max = df_dist["distance_km"].idxmax()
         row_max = df_dist.loc[idx_max]
+        band_text = band_label(row_max["band_code"])
         st.markdown(
             f"**Longest DX (sampled):** {row_max['distance_km']:.1f} km — "
-            f"TX `{row_max['txcall']}` ({row_max['tx_grid']}) → "
-            f"RX `{row_max['reporter']}` ({row_max['reporter_grid']}) on {row_max['band']}"
+            f"TX `{row_max['tx_call']}` ({row_max['tx_grid']}) → "
+            f"RX `{row_max['reporter']}` ({row_max['reporter_grid']}) on {band_text}"
         )
 
         # Best DX per Band (within selected year)
         df_all_bands = con.execute(
             """
-            SELECT ts, band, snr, reporter, reporter_grid, txcall, tx_grid
+            SELECT timestamp, band_code, snr_db, reporter, reporter_grid, tx_call, tx_grid
             FROM spots
-            WHERE year=?
+            WHERE CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER)=?
             LIMIT 100000
             """,
             [year],
@@ -555,16 +662,16 @@ else:
             d2["distance_km"] = d2.apply(lambda r: grid_distance_km(r["tx_grid"], r["reporter_grid"]), axis=1)
             d2 = d2.dropna(subset=["distance_km"])
             if not d2.empty:
-                idx = d2.groupby("band")["distance_km"].idxmax()
-                df_best = d2.loc[idx, ["band", "txcall", "tx_grid", "reporter", "reporter_grid", "distance_km"]]
+                idx = d2.groupby("band_code")["distance_km"].idxmax()
+                df_best = d2.loc[idx, ["band_code", "tx_call", "tx_grid", "reporter", "reporter_grid", "distance_km"]].copy()
+                df_best["Band"] = df_best["band_code"].map(band_label)
                 df_best = df_best.rename(columns={
-                    "band": "Band",
-                    "txcall": "TX Station",
+                    "tx_call": "TX Station",
                     "tx_grid": "TX Grid",
                     "reporter": "RX Station",
                     "reporter_grid": "RX Grid",
                     "distance_km": "Best Distance (km)",
-                }).sort_values("Band")
+                }).drop(columns=["band_code"]).sort_values("Band")
                 st.subheader("Best DX per Band (sampled)")
                 st.dataframe(df_best, use_container_width=True)
 
@@ -610,8 +717,17 @@ else:
 st.markdown("---")
 st.subheader("Database / Ingest Status")
 
-latest = con.execute("SELECT year, month FROM spots ORDER BY year DESC, month DESC LIMIT 1").fetchone()
-df_year_counts = con.execute("SELECT year, COUNT(*) AS n FROM spots GROUP BY year ORDER BY year").fetchdf()
+latest = con.execute(
+    "SELECT "
+    "  CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER) AS y, "
+    "  CAST(EXTRACT(MONTH FROM timestamp) AS INTEGER) AS m "
+    "FROM spots ORDER BY y DESC, m DESC LIMIT 1"
+).fetchone()
+
+df_year_counts = con.execute(
+    "SELECT CAST(EXTRACT(YEAR FROM timestamp) AS INTEGER) AS year, COUNT(*) AS n "
+    "FROM spots GROUP BY year ORDER BY year"
+).fetchdf()
 if not df_year_counts.empty:
     df_year_counts = df_year_counts.rename(columns={"year": "Year", "n": "Spot Count"})
 

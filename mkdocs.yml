@@ -28,6 +28,7 @@ nav:
   - Makefile: makefile.md
   - Troubleshooting: troubleshooting.md
   - Process Release: process-release.md
+  - WSPR Data Schema: schema.md
 
 markdown_extensions:
   - admonition

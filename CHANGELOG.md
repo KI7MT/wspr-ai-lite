@@ -6,6 +6,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2025-08-25
+
+### Added
+- **Canonical WSPR Schema**
+  - Added `docs/schema.md` as the single source of truth for all `spots` fields.
+  - Normalized columns (`spot_id`, `timestamp`, `reporter`, `reporter_grid`, `snr_db`, `freq_mhz`, `tx_call`, `tx_grid`, `power_dbm`, `drift_hz_per_min`, `distance_km`, `azimuth_deg`, `band_code`, `rx_version`, `code`).
+
+- **Ingest pipeline updates**
+  - Refactored `ingest.py` to parse monthly archives directly into the canonical schema.
+  - Added `band_code_from_freq_mhz()` (int-based band codes) alongside legacy `band_from_freq_mhz()`.
+  - Added `load_month_bytes()` with `offline` option (use local `.gz` cache only).
+  - Ensured consistent dtype casting and callsign normalization.
+
+- **CLI updates (Click migration)**
+  - Migrated `cli.py`, `ingest.py`, and `fetch.py` to use [Click](https://click.palletsprojects.com/) for cleaner CLI UX.
+  - New `fetch` command: stage `.csv.gz` archives into a local cache for later ingestion.
+  - Consistent `--from/--to/--db/--cache` options across CLI commands.
+
+- **Database tools CLI**
+  - New `wspr-ai-lite-tools` utility for DB management:
+    - `stats` — summarize row counts, time range, distinct reporters/tx, and band codes.
+    - `verify` — check schema against canonical WSPR `spots` schema, with `--strict` and `--explain`.
+    - `migrate` — upgrade legacy/flat schemas to canonical format (with optional `--no-backup`).
+  - Provides a base template for adding future DB utilities.
+
+- **Database views**
+  - Added script `scripts/create_views.py` and Makefile target `db-views`.
+  - Provides a computed view `spots_v` with derived `year`, `month`, `hour`, and `band_label` columns for simplified queries.
+
+- **MCP Foundations**
+  - Introduced `src/wspr_ai_lite/mcp/manifest.json` defining safe, typed tools for accessing WSPR data.
+  - Added `src/wspr_ai_lite/mcp/server.py` with Click entrypoint `wspr-ai-lite-mcp`.
+  - Implements initial tools: `get_summary`, `query_spots`, `top_reporters`, `top_heard`, `band_activity`, `spot_by_id`.
+  - Supports `--init` mode for creating the DB if missing.
+  - Establishes contract-driven access (manifest defines, server implements).
+
+### Changed
+- **UI / Queries**
+  - Updated Streamlit app queries to align with canonical schema (`snr_db`, `freq_mhz`, `tx_call`, etc.).
+  - Replaced legacy `band` string usage with `band_code` + `band_label` view where appropriate.
+  - Ensured reciprocal heard, distance/DX, and SNR trend panels use updated schema.
+
+- **Makefile**
+  - Cleaned duplicate/overlapping targets.
+  - Added colorized help output and sane defaults for `DB`, `FROM`, `TO`, and `PORT`.
+  - New `db-views` target to build/refresh computed views.
+
+### Fixed
+- Consistent uppercase normalization of callsigns and Maidenhead grids.
+- Proper handling of missing/blank `rx_version` and `code` fields in older archives.
+- DuckDB table creation now fully aligned with schema doc.
+
+---
+
+[0.3.4]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.3...v0.3.4
+
+
 ## [0.3.3] - 2025-08-25
 
 ### Fixed

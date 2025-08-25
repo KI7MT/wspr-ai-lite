@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wspr-ai-lite"
-version = "0.3.3"
+version = "0.3.5"
 requires-python = ">=3.11"
 readme = "README.md"
 description = "Lightweight WSPR analytics: DuckDB ingest + Streamlit dashboard."
@@ -40,6 +40,13 @@ dev = [
     "hatchling>=1.25" # handy if you use hatch locally
 ]
 
+mcp = [
+  # add the libs your MCP server actually uses, e.g.:
+  # "fastapi>=0.110",
+  # "uvicorn>=0.29",
+  # "mcp>=0.1",
+]
+
 docs = [
     "mkdocs",
     "mkdocs-material",
@@ -52,6 +59,8 @@ packages = ["src/wspr_ai_lite"]
 [project.scripts]
 wspr-ai-lite = "wspr_ai_lite.cli:main"
 wspr-lite = "wspr_ai_lite.cli:deprecated_entrypoint"
+wspr-ai-lite-mcp = "wspr_ai_lite.mcp.server:main"
+wspr-ai-lite-tools = "wspr_ai_lite.tools:cli"
 
 [project.urls]
 Homepage = "https://github.com/KI7MT/wspr-ai-lite"
@@ -68,3 +77,7 @@ ignore-magic = true
 ignore-private = true
 exclude = [".venv", "data", "site", "build", "dist", "tmp", "temp", ".pytest_cache", "__pycache__"]
 color = true
+
+
+[tool.setuptools.package-data]
+"wspr_ai_lite.mcp" = ["manifest.json"]

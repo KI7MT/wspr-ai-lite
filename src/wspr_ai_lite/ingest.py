@@ -9,21 +9,44 @@ Functions provided:
 - month_range(start, end): iterate (year, month) inclusive for YYYY-MM inputs
 - archive_url(year, month): WSPRNet monthly CSV.GZ URL
 - download_month(year, month, cache_dir): returns raw bytes (cached)
-- band_from_freq_mhz(freq_mhz): map float MHz → WSPR band label
-- ingest_month(con, year, month, cache_dir): parse & insert into DuckDB
+- band_from_freq_mhz(freq_mhz): map float MHz → human band label (legacy helper)
+- band_code_from_freq_mhz(freq_mhz): map float MHz → canonical band_code (int)
+- ensure_table(con): create canonical DuckDB table if missing
+- ingest_month(con, year, month, cache_dir, offline): parse & insert (canonical schema)
+
+This file also provides an optional Click CLI (fetch/ingest) behind
+`if __name__ == "__main__":` for convenience; the canonical CLI remains `cli.py`.
 """
 
-from datetime import datetime
 from pathlib import Path
 from typing import Generator, Tuple
-
-import gzip
+from datetime import timezone
 import io
+import gzip
 
 import duckdb
 import pandas as pd
 import requests
+import click
 
+# Canonical column order (must match inserts)
+_CANON_COLS = [
+    "spot_id",
+    "timestamp",
+    "reporter",
+    "reporter_grid",
+    "snr_db",
+    "freq_mhz",
+    "tx_call",
+    "tx_grid",
+    "power_dbm",
+    "drift_hz_per_min",
+    "distance_km",
+    "azimuth_deg",
+    "band_code",
+    "rx_version",
+    "code",
+]
 
 # ----------------------------
 # Helpers & core functionality
@@ -48,7 +71,7 @@ def archive_url(year: int, month: int) -> str:
 
 
 def _cache_path(cache_dir: Path, year: int, month: int) -> Path:
-    """Make the download cache directory if it doe not exist."""
+    """Return cache path for a given year-month; ensure directory exists."""
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir / f"wsprspots-{year:04d}-{month:02d}.csv.gz"
 
@@ -68,12 +91,8 @@ def download_month(year: int, month: int, cache_dir: str | Path = ".cache") -> b
 
 
 def band_from_freq_mhz(freq_mhz: float) -> str:
-    """Map a frequency in MHz to a WSPR band label.
-
-    Uses common center/range approximations for WSPR segments.
-    """
+    """Map a frequency in MHz to a WSPR band label (human string; legacy helper)."""
     f = float(freq_mhz)
-    # Simplified ranges that work well for historical archives.
     bands = [
         (0.136, 0.139, "2200m"),
         (0.472, 0.479, "630m"),
@@ -100,118 +119,257 @@ def band_from_freq_mhz(freq_mhz: float) -> str:
     return "unknown"
 
 
-def _parse_month_csv(raw_gz: bytes) -> pd.DataFrame:
-    """Parse a wsprspots-YYYY-MM.csv.gz blob into a normalized DataFrame.
+def band_code_from_freq_mhz(freq: float) -> int | None:
+    """Map frequency in MHz → canonical band_code (int). -1 LF, 0 MF, else round(MHz)."""
+    if freq is None:
+        return None
+    try:
+        f = float(freq)
+    except Exception:
+        return None
+    if f < 0.3:
+        return -1  # LF
+    if f < 3.0:
+        return 0   # MF
+    return int(round(f))    # crude but consistent with legacy rule
 
-    The monthly archives do not include headers. A typical row (15 cols) seen historically:
-      0: spot_id
-      1: unixtime (seconds)
-      2: txcall
-      3: tx_grid
-      4: snr
-      5: freq_mhz
-      6: reporter
-      7: reporter_grid
-      (additional trailing columns may exist; we ignore them)
+# ----------------------------
+# DuckDB schema management
+# ----------------------------
 
-    We robustly pick the columns by position and ignore extra ones.
-    """
-    # Decompress
-    buf = io.BytesIO(gzip.decompress(raw_gz))
-    # Read only the columns we need; tolerate extra cols.
-    df = pd.read_csv(
-        buf,
-        header=None,
-        usecols=[1, 2, 3, 4, 5, 6, 7],
-        names=["unixtime", "txcall", "tx_grid", "snr", "freq", "reporter", "reporter_grid"],
-        dtype={
-            "unixtime": "Int64",
-            "txcall": "string",
-            "tx_grid": "string",
-            "snr": "Int64",
-            "freq": "float64",
-            "reporter": "string",
-            "reporter_grid": "string",
-        },
-        low_memory=False,
-    )
-
-    # Timestamp & calendar fields
-    ts_aware = pd.to_datetime(df["unixtime"], unit="s", utc=True)
-    ts = ts_aware.dt.tz_localize(None)
-    out = pd.DataFrame(
-        {
-            "ts": ts,
-            "band": df["freq"].map(band_from_freq_mhz),
-            "freq": df["freq"].astype("float64"),
-            "snr": df["snr"].astype("Int64"),
-            "reporter": df["reporter"].astype("string"),
-            "reporter_grid": df["reporter_grid"].astype("string"),
-            "txcall": df["txcall"].astype("string"),
-            "tx_grid": df["tx_grid"].astype("string"),
-            "year": ts.dt.year.astype("int32"),
-            "month": ts.dt.month.astype("int16"),
-        }
-    )
-    # Drop obvious null rows (rare, but keeps DB clean)
-    out = out.dropna(subset=["ts", "freq", "snr"])
-    # SNR can be nullable Int; cast to Python int for DuckDB
-    out["snr"] = out["snr"].astype("int32")
-    return out
-
-
-def _ensure_table(con: duckdb.DuckDBPyConnection) -> None:
-    """Create the 'spots' table if it does not exist."""
+def ensure_table(con: duckdb.DuckDBPyConnection) -> None:
+    """Create canonical DuckDB table `spots` if missing (UTC semantics for timestamp)."""
     con.execute(
         """
         CREATE TABLE IF NOT EXISTS spots (
-            ts TIMESTAMP,
-            band VARCHAR,
-            freq DOUBLE,
-            snr INTEGER,
-            reporter VARCHAR,
-            reporter_grid VARCHAR,
-            txcall VARCHAR,
-            tx_grid VARCHAR,
-            year INTEGER,
-            month INTEGER
+            spot_id           BIGINT PRIMARY KEY,
+            timestamp         TIMESTAMP,        -- stored as UTC (tz-naive); keep UTC semantics
+            reporter          VARCHAR,
+            reporter_grid     VARCHAR,
+            snr_db            SMALLINT,
+            freq_mhz          DOUBLE,
+            tx_call           VARCHAR,
+            tx_grid           VARCHAR,
+            power_dbm         SMALLINT,
+            drift_hz_per_min  SMALLINT,
+            distance_km       INTEGER,
+            azimuth_deg       SMALLINT,
+            band_code         SMALLINT,         -- -1 LF, 0 MF, else int(MHz)
+            rx_version        VARCHAR,
+            code              INTEGER
         )
         """
     )
 
+# ----------------------------
+# CSV → DataFrame normalization
+# ----------------------------
+
+def _read_month_to_df(raw_gz: bytes) -> pd.DataFrame:
+    """Read a WSPR monthly CSV.GZ into a canonical-schema DataFrame.
+
+    The wsprnet monthly archives are typically headerless and may include
+    additional trailing columns. We read up to the first 15 positions (when present)
+    and normalize into the canonical layout:
+
+      0: spot_id (int)                  -> spot_id
+      1: unixtime (sec)                 -> timestamp (UTC)
+      2: tx_call (str)                  -> tx_call
+      3: tx_grid (str)                  -> tx_grid
+      4: snr (dB, int)                  -> snr_db
+      5: freq (MHz, float)              -> freq_mhz
+      6: reporter (str)                 -> reporter
+      7: reporter_grid (str)            -> reporter_grid
+      8: power_dbm (int, optional)      -> power_dbm
+      9: drift_hz_per_min (int, opt)    -> drift_hz_per_min
+     10: distance_km (int, opt)         -> distance_km
+     11: azimuth_deg (int, opt)         -> azimuth_deg
+     12: band_archive (int, opt)        -> (ignored; we recompute band_code)
+     13: rx_version (str, opt)          -> rx_version
+     14: code (int, opt)                -> code
+
+    Returns a pandas.DataFrame with canonical columns in canonical order.
+    """
+    buf = io.BytesIO(gzip.decompress(raw_gz))
+
+    df = pd.read_csv(
+        buf,
+        header=None,
+        usecols=list(range(0, 15)),  # read up to 15 columns if present
+        names=[
+            "spot_id", "unixtime", "tx_call", "tx_grid",
+            "snr_db", "freq_mhz", "reporter", "reporter_grid",
+            "power_dbm", "drift_hz_per_min", "distance_km", "azimuth_deg",
+            "band_archive", "rx_version", "code",
+        ],
+        dtype={
+            "spot_id": "Int64",
+            "unixtime": "Int64",
+            "tx_call": "string",
+            "tx_grid": "string",
+            "snr_db": "Int64",
+            "freq_mhz": "float64",
+            "reporter": "string",
+            "reporter_grid": "string",
+            "power_dbm": "Int64",
+            "drift_hz_per_min": "Int64",
+            "distance_km": "Int64",
+            "azimuth_deg": "Int64",
+            "band_archive": "Int64",
+            "rx_version": "string",
+            "code": "Int64",
+        },
+        low_memory=False,
+    )
+
+    # Timestamp → UTC (store tz-naive but UTC semantics)
+    ts = pd.to_datetime(df["unixtime"], unit="s", utc=True).dt.tz_localize(None)
+    df["timestamp"] = ts
+    df.drop(columns=["unixtime"], inplace=True, errors="ignore")
+
+    # Normalize callsigns & grids (uppercase; leave empty as NA)
+    for c in ("reporter", "tx_call", "reporter_grid", "tx_grid"):
+        if c in df.columns:
+            df[c] = df[c].astype("string").str.strip().str.upper().replace({"": pd.NA})
+
+    # Compute canonical band_code from freq_mhz (ignore band_archive)
+    df["band_code"] = df["freq_mhz"].map(band_code_from_freq_mhz).astype("Int64")
+
+    # rx_version can be missing historically; keep as NA if blank
+    if "rx_version" in df.columns:
+        df["rx_version"] = df["rx_version"].astype("string").str.strip().replace({"": pd.NA})
+    else:
+        df["rx_version"] = pd.Series(pd.NA, dtype="string")
+
+    # code may be absent; default to 0 if NA/missing
+    if "code" in df.columns:
+        df["code"] = df["code"].fillna(0).astype("Int64")
+    else:
+        df["code"] = pd.Series(0, dtype="Int64")
+
+    # Ensure all canonical columns exist
+    for col in _CANON_COLS:
+        if col not in df.columns:
+            df[col] = pd.NA
+
+    out = df[_CANON_COLS].copy()
+
+    # Drop rows without spot_id or timestamp
+    out = out.dropna(subset=["spot_id", "timestamp"])
+
+    # Cast to compact dtypes for DuckDB
+    casts = {
+        "spot_id": "Int64",
+        "snr_db": "Int16",
+        "power_dbm": "Int16",
+        "drift_hz_per_min": "Int16",
+        "distance_km": "Int32",
+        "azimuth_deg": "Int16",
+        "band_code": "Int16",
+        "code": "Int32",
+        "freq_mhz": "float64",
+        "reporter": "string",
+        "reporter_grid": "string",
+        "tx_call": "string",
+        "tx_grid": "string",
+        "rx_version": "string",
+    }
+    out = out.astype({k: v for k, v in casts.items() if k in out.columns})
+
+    return out
+
+# ----------------------------
+# Byte loading (offline/online)
+# ----------------------------
+
+def load_month_bytes(
+    year: int,
+    month: int,
+    cache_dir: str | Path = ".cache",
+    offline: bool = False,
+) -> bytes:
+    """
+    Return the monthly CSV.GZ bytes.
+    If offline=True, read from cache only; raise if not present.
+    If offline=False, download when missing (same behavior as download_month).
+    """
+    cache_dir = Path(cache_dir)
+    path = _cache_path(cache_dir, year, month)
+    if path.exists():
+        return path.read_bytes()
+    if offline:
+        raise FileNotFoundError(f"Missing cached file: {path}")
+    return download_month(year, month, cache_dir)
+
+# ----------------------------
+# Ingest one month (canonical)
+# ----------------------------
 
 def ingest_month(
     con: duckdb.DuckDBPyConnection,
     year: int,
     month: int,
     cache_dir: str | Path = ".cache",
+    offline: bool = False,
 ) -> int:
-    """Download, parse, and insert one month's spots into DuckDB.
-
-    Returns the number of rows inserted.
     """
-    raw = download_month(year, month, cache_dir)
-    df = _parse_month_csv(raw)
-    _ensure_table(con)
+    Download (or read cached), parse, and insert one month into DuckDB
+    using the canonical schema. Returns the number of rows inserted.
+    """
+    raw = load_month_bytes(year, month, cache_dir, offline=offline)
+    df = _read_month_to_df(raw)
 
-    # ensure the data types are what DuckDB expects before insertion
-    df = df.astype({
-        "ts": "datetime64[ns]",
-        "band": "string",
-        "freq": "float64",
-        "snr": "int32",
-        "reporter": "string",
-        "reporter_grid": "string",
-        "txcall": "string",
-        "tx_grid": "string",
-        "year": "int32",
-        "month": "int16",
-    })
+    ensure_table(con)
 
-    # Insert via DuckDB's dataframe ingestion
-    con.register("df", df)  # expose pandas DataFrame as a DuckDB view
-    con.execute("INSERT INTO spots SELECT * FROM df")
-    con.unregister("df")
+    con.register("spots_df", df)
+    con.execute("INSERT INTO spots SELECT * FROM spots_df")
+    con.unregister("spots_df")
 
     print(f"[OK] {year:04d}-{month:02d} ({len(df):,} rows)")
     return int(len(df))
+
+# ----------------------------
+# Optional Click CLI (module-local)
+# ----------------------------
+
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+def _cli() -> None:
+    """Local ingest/fetch commands (use `wspr-ai-lite` for the main CLI)."""
+    pass
+
+@_cli.command("fetch")
+@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
+@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
+@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True)
+@click.option("--force", is_flag=True, default=False, help="Re-download even if file exists")
+def _fetch_cmd(start: str, end: str, cache: Path, force: bool) -> None:
+    """Download monthly .csv.gz archives into a cache directory."""
+    cache.mkdir(parents=True, exist_ok=True)
+    n = 0
+    for y, m in month_range(start, end):
+        p = _cache_path(cache, y, m)
+        if force and p.exists():
+            try: p.unlink()
+            except OSError: pass
+        download_month(y, m, cache_dir=cache)
+        click.echo(f"[staged] {p}")
+        n += 1
+    click.secho(f"[done] staged {n} file(s) in {cache}", fg="green")
+
+@_cli.command("ingest")
+@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
+@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
+@click.option("--db", type=click.Path(path_type=Path), default=Path("data/wspr.duckdb"), show_default=True)
+@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True)
+@click.option("--offline", is_flag=True, default=False, help="Read only from cache (no network)")
+def _ingest_cmd(start: str, end: str, db: Path, cache: Path, offline: bool) -> None:
+    """Ingest one or more months into DuckDB (canonical schema)."""
+    db.parent.mkdir(parents=True, exist_ok=True)
+    con = duckdb.connect(str(db))
+    total = 0
+    for y, m in month_range(start, end):
+        total += ingest_month(con, y, m, cache_dir=cache, offline=offline)
+    click.secho(f"[OK] inserted rows: {total}", fg="green")
+
+if __name__ == "__main__":
+    _cli()

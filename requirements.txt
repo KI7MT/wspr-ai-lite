@@ -5,3 +5,4 @@ numpy
 requests
 pytest
 pyyaml-env-tag
+click>=8.1

@@ -210,3 +210,7 @@ smoke-test-pypi: smoke-clean ## Install from PyPI and run verify+ui-check
 	@$(SMOKE_PY) -c "import duckdb,sys; con=duckdb.connect('$(SMOKE_DB)', read_only=True); cnt=con.execute('SELECT COUNT(*) FROM spots').fetchone()[0]; print(f'[smoke] rows: {cnt}'); sys.exit(0 if cnt>0 else 2)"
 	@$(SMOKE_PY) -c "import importlib, pathlib, wspr_ai_lite; p=pathlib.Path(wspr_ai_lite.__file__).with_name('wspr_ai_lite.py'); assert p.exists(), f'wspr_ai_lite.py missing at {p}'; importlib.import_module('streamlit'); print('[smoke] ui-check: app present & streamlit import OK')"
 	@echo "[smoke] PyPI smoke: OK"
+
+.PHONY: db-views
+db-views: ## Create/refresh computed views (spots_v)
+	@$(ACT); $(PY) scripts/create_views.py --db $(DB)
