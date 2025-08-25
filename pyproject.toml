@@ -7,6 +7,27 @@ name = "wspr-ai-lite"
 version = "0.2.6"
 requires-python = ">=3.11"
 
+# These get bundled into the wheel/sdist
+dependencies = [
+    "duckdb>=0.10.2",
+    "streamlit>=1.37.0",
+    "pandas>=2.2",
+    "click>=8.1",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pre-commit",
+]
+
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-macros-plugin",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/wspr_ai_lite"]
 
@@ -28,12 +49,8 @@ classifiers = [
   "Environment :: Console",
 ]
 
-dependencies = [
-  "duckdb",
-  "pandas",
-  "streamlit",
-  "requests",
-]
+
+
 
 [project.scripts]
 wspr-ai-lite = "wspr_ai_lite.cli:main"
