@@ -12,15 +12,21 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![Docs](https://img.shields.io/badge/docs-github_pages-blue)](https://KI7MT.github.io/wspr-ai-lite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+---
+
 ## Workflows and Packaging Status
-![GH tag](https://img.shields.io/github/v/tag/KI7MT/wspr-ai-lite?sort=semver)
-[![GH release](https://img.shields.io/github/v/release/KI7MT/wspr-ai-lite)](https://github.com/KI7MT/wspr-ai-lite/releases)
-[![CI](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml)
-[![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
+
+**Versions**
 [![PyPI version](https://img.shields.io/pypi/v/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 [![Python versions](https://img.shields.io/pypi/pyversions/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
+![GitHub tag](https://img.shields.io/github/v/tag/KI7MT/wspr-ai-lite?sort=semver)
+[![GitHub release](https://img.shields.io/github/v/release/KI7MT/wspr-ai-lite)](https://github.com/KI7MT/wspr-ai-lite/releases)
+
+**CI/CD**
+[![CI](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml)
+[![Smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)
-[![smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
+[![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
 
 ## Get Help
 - **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)
