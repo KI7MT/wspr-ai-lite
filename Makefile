@@ -137,6 +137,8 @@ distclean: clean ## More thorough clean: includes venv, packaging artifacts, tem
 	@rm -rf .streamlit || true
 	@rm -rf *.tar.gz *.zip || true
 	@rm -rf tmp temp || true
+	@rm -rf .smoke-tmp || true
+	@rm -rf dist/ || true
 	@echo "Dist-clean complete (venv, temp files, archives removed)."
 
 reset: distclean ## Full reset: distclean + recreate venv + install deps + ingest sample

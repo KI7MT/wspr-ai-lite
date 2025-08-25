@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [0.2.6] - 2025-08-24
+### Fixed
+- Declared required runtime dependencies (`duckdb`, `streamlit`, etc.) in `pyproject.toml`.
+  This ensures the CLI works correctly after a fresh `pip install wspr-ai-lite` without missing imports.
+
+### Improved
+- Smoke tests now validate the PyPI wheel by running `wspr-ai-lite ingest` end-to-end,
+  verifying dependency resolution and successful data ingestion.
+- Documentation versioning refined to pull from `pyproject.toml`, reducing mismatch risk.
+
+---
+
+[0.2.6]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.2.5...v0.2.6
+
+## [0.2.6] - 2025-08-24
 ### Added
 - **MkDocs macros integration**: Added `docs/_ext/wspr_macros` with build-time macros (project metadata, UTC build time).
 - **CI Docs versioning**: GitHub Actions now injects `WSPR_AI_LITE_VERSION` into docs builds for reproducible version output.
