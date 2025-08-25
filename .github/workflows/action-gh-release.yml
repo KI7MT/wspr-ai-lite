@@ -1,3 +1,4 @@
+# NOTE: This workflow intentionally does NOT publish to PyPI.
 name: publish
 on:
   push:
@@ -5,10 +6,9 @@ on:
       - "v*.*.*"
 
 jobs:
-  build-publish:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
     steps:
       - uses: actions/checkout@v4
@@ -39,11 +39,6 @@ jobs:
         with:
           name: dist
           path: dist/*
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          print-hash: true
 
   github-release:
     needs: build-publish
