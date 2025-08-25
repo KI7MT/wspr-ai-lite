@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.2.6] - 2025-08-24
+### Added
+- **MkDocs macros integration**: Added `docs/_ext/wspr_macros` with build-time macros (project metadata, UTC build time).
+- **CI Docs versioning**: GitHub Actions now injects `WSPR_AI_LITE_VERSION` into docs builds for reproducible version output.
+- **GitHub Standards**: Added `CODE_OF_CONDUCT.md`, `SECURITY.md`, and `.github` templates (issues + PR).
+
+### Changed
+- **Docs build pipeline**: Consolidated `make setup-dev` to install all requirements (runtime, dev, docs, pre-commit).
+- **Makefile**: Removed brittle heredocs; simplified `docs-serve` and ensured environment injection for docs versioning.
+- **Docs navigation**: Adjusted to fix broken references (`CHANGELOG.md`, `LICENSE.md`, etc.).
+
+### Fixed
+- **Smoke tests**: Updated `smoke-ui-check` to check for `wspr_ai_lite.py` instead of deprecated `wspr_app.py`.
+- **Docs warnings**: Resolved strict build errors due to mismatched filenames and missing references.
+
 ## [0.2.5] - 2025-08-24
 ### Changed
 - Fixes a missing link in documentation site

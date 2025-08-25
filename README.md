@@ -1,7 +1,5 @@
 # 📡 wspr-ai-lite
 
-Current version: {{ config.extra.version | default("dev") }}
-
 **Lightweight WSPR analytics rendering tool employing DuckDB + Streamlit**
 
 Designed to be portable, and lightweight, `wspr-ai-lite` can be run on RasperyPI's or Enterprise Servers.
@@ -15,6 +13,7 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Workflows and Packaging Status
+[![GitHub release](https://img.shields.io/github/v/release/KI7MT/wspr-ai-lite)](https://github.com/KI7MT/wspr-ai-lite/releases)
 [![CI](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml)
 [![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
 [![PyPI version](https://img.shields.io/pypi/v/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
