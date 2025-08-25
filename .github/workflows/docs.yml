@@ -3,12 +3,14 @@ name: docs
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*.*.*'
     paths:
       - 'mkdocs.yml'
       - 'docs/**'
-      - 'src/**'          # rebuild if you show version from code (macros)
+      - 'pyproject.toml'     # pick up version changes
       - '.github/workflows/docs.yml'
-  workflow_dispatch: {}   # allow manual rebuilds from Actions tab
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -40,22 +42,20 @@ jobs:
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
 
-      - name: Install MkDocs + plugins
+      - name: Install MkDocs deps
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs-material mkdocs-material-extensions mkdocs-macros-plugin pyyaml-env-tag
+          pip install mkdocs mkdocs-material mkdocs-material-extensions pyyaml-env-tag
 
-      - name: Compute docs version
-        run: echo "WSPR_AI_LITE_VERSION=$(python -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")" >> $GITHUB_ENV
-
-      - name: Sanity import macros
-        run: python -c "import sys; sys.path.insert(0,'docs/_ext'); import wspr_macros; print('wspr_macros import OK')"
+      - name: Export version from pyproject.toml
+        run: |
+          V=$(python -c "import tomllib, pathlib; print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")
+          echo "WSPR_AI_LITE_VERSION=$V" >> "$GITHUB_ENV"
 
       - name: Build site
-        run: mkdocs build --strict
         env:
           WSPR_AI_LITE_VERSION: ${{ env.WSPR_AI_LITE_VERSION }}
-          PYTHONPATH: docs/_ext
+        run: mkdocs build --strict
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
