@@ -6,6 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-08-25
+### 🚀 Highlights
+- Start of the **0.3.x roadmap series**, focusing on stability and release automation.
+
+### 🔧 Changed
+- Switched versioning to **single source of truth** in `pyproject.toml`.
+- Improved GitHub Actions workflows:
+  - Separated PyPI publishing (`release.yml`) from GitHub Release creation (`action-gh-release.yml`).
+  - Verified tag-to-version consistency against `pyproject.toml`.
+  - Added artifact sharing between jobs.
+- Documentation:
+  - Fixed **MkDocs macros import** (`wspr_macros`) for both local and CI builds.
+  - Docs now correctly show `Current version: x.y.z` instead of `dev`.
+  - Added environment-variable–based version injection (`extra.version`).
+
+### 🐛 Fixed
+- Removed duplicate/unwanted PyPI publishing from `action-gh-release.yml`.
+- Corrected missing README on PyPI by setting `readme = "README.md"` in `pyproject.toml`.
+
+### 📦 Packaging
+- Dependency metadata corrected in `pyproject.toml` (`duckdb`, `streamlit`, etc.).
+- Classifiers updated for Python 3.11–3.13.
+- Smoke tests now validate `duckdb` ingestion end-to-end.
+
+---
+
+[0.3.0]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.2.9...v0.3.0
+
 ## [0.2.9] - 2025-08-25
 
 ### Fixed
