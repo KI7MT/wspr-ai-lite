@@ -35,12 +35,15 @@ jobs:
 
       - name: Prepare docs assets
         run: |
-          cp CHANGELOG.md docs/CHANGELOG.md
+          cp CODE_OF_CONDUCT docs/CODE_OF_CONDUCT
+          cp CONTRIBUTING docs/CONTRIBUTING
           cp CONTRIBUTORS.md docs/CONTRIBUTORS.md
-          # If your license file is named 'LICENSE' (no extension), copy to LICENSE.md for MkDocs
           if [ -f LICENSE ]; then cp LICENSE docs/LICENSE.md; fi
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
+          cp ROADMAP docs/ROADMAP
+          cp SECURITY docs/SECURITY
+          cp SUPPORT.md docs/SUPPORT.md
 
       - name: Install MkDocs deps
         run: |

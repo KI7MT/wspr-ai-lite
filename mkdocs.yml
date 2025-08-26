@@ -1,35 +1,40 @@
-site_name: WSPR AI Lite Documentation
-site_description: Lightweight WSPR analytics with DuckDB + Streamlit
-site_author: KI7MT
-site_url: https://ki7mt.github.io/wspr-ai-lite/
+site_name: wspr-ai-lite
+site_url: https://KI7MT.github.io/wspr-ai-lite/
 repo_url: https://github.com/KI7MT/wspr-ai-lite
-repo_name: KI7MT/wspr-ai-lite
+edit_uri: edit/main/docs/
 
 theme:
   name: material
   language: en
   palette:
     primary: indigo
-
   features:
-    - navigation.sections
-    - navigation.expand
-    - navigation.instant
-    - toc.integrate
-    - content.code.copy
-    - search.suggest
+    - navigation.tabs
+    - navigation.top
     - search.highlight
+    - search.suggest
 
 nav:
-  - Home: index.md
+  - Home: index.md  # maps docs/README.md to site index
+  - Quickstart: ingest.md
   - User Setup: user-setup.md
-  - Developer Setup: developer-setup.md
-  - Testing: testing.md
-  - Makefile: makefile.md
-  - Process Release: process-release.md
-  - WSPR Data Schema: schema.md
-  - Ingest CSV: ingest.md
-  - Troubleshooting: troubleshooting.md
+  - User Interface: ui.md
+  - Development:
+    - Dev Setup: developer-setup.md
+    - Makefile: makefile.md
+    - Testing: testing.md
+    - Process Release: process-release.md
+    - Troubleshooting: troubleshooting.md
+  - Schema: schema.md
+  - Project:
+    - Roadmap: ROADMAP.md
+    - Contributors:  CONTRIBUTORS.md
+    - Contributing: CONTRIBUTING.md
+    - Code of Conduct: CODE_OF_CONDUCT.md
+    - Security: SECURITY.md
+    - License: LICENSE
+    - Security: SECURITY.md
+  - Support: SUPPORT.md
 
 markdown_extensions:
   - admonition

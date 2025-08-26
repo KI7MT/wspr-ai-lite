@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.9] - 2025-08-27
+### Changed
+- **Documentation site refactor**
+  - Moved root-level docs (`README.md`, `ROADMAP.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`) into the `docs/` directory for MkDocs.
+  - Fixed broken links and navigation warnings caused by symlinked files.
+  - Updated `mkdocs.yml` navigation to reference local `docs/` copies instead of symlinks.
+  - Ensured `docs-serve` runs without warnings and GH Pages deploys cleanly.
+
+---
+
+[0.3.9]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.8...v0.3.9
+
 ## [0.3.8] - 2025-08-26
 ### Fixed
 - Removed stray `@cli.command` decorators from `ingest.py` (ingest is a library, not a CLI).
