@@ -1,6 +1,8 @@
 # wspr-ai-lite
 Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit**, with safe query access via **MCP Agents**.
 
+## Resources
+
 [![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 [![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![MCP](https://img.shields.io/badge/AI--Agent--Ready-MCP-green)](https://modelcontextprotocol.io/)
@@ -45,15 +47,21 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - Hourly activity heatmaps & yearly unique counts
 - Works on **Windows, Linux, macOS** — no heavy server required.
 
+---
+
 ## Key Features
 - Local DuckDB storage with efficient ingest + caching
 - Streamlit UI for interactive exploration
 - Distance/DX analysis with Maidenhead grid conversion
 - QSO-like reciprocal finder with configurable time window
 
+---
+
 ## Fast Performance
 - Columnar Storage: DuckDB is a columnar database, which allows for better data compression and faster query execution.
 - Vectorization: processes data in batches, optimized CPU usage, significantly faster than traditional OLTP databases.
+
+---
 
 ## Ease of Use
 - Simple Installation: DuckDB can be installed with just a few lines of code, and on any platform.
@@ -88,6 +96,8 @@ Open http://localhost:8501 in your browser 🎉
 
 👉 For developers who want to hack on the code directly, see [Developer Setup](https://ki7mt.github.io/wspr-ai-lite/DEV_SETUP/).
 
+---
+
 ## Example Visualizations
 - SNR Distribution by Count
 - Monthly Spot Counts
@@ -98,6 +108,8 @@ Open http://localhost:8501 in your browser 🎉
 - Best DX per Band
 - Activity by Hour × Month
 - TX/RX Balance and QSO Success Rate
+
+---
 
 ## Development
 
@@ -113,7 +125,9 @@ make run         # launch Streamlit UI
 make test        # run pytest suite
 ```
 
-### Makefile Usage
+---
+
+## Makefile Usage
 
 There is an extensive list of Makefile targets that simplify operations. See `make help` for a full list of available targets.
 
@@ -123,14 +137,20 @@ There is an extensive list of Makefile targets that simplify operations. See `ma
 - **Ask a question / share ideas** → [GitHub Discussions](https://github.com/KI7MT/wspr-ai-lite/discussions)
 - **Read the docs** → https://ki7mt.github.io/wspr-ai-lite/
 
+---
+
 ## Acknowledgements
 - Joe Taylor, K1JT, and the WSJT-X Development Team
 - WSPRNet community for providing global weak-signal data
 - Contributors to DuckDB and Streamlit
 - Amateur radio operators worldwide who share spots and keep the network alive
 
+---
+
 ## Contributing
 Pull requests are welcome!
+
+---
 
 ## Roadmap
 - **Phase 1**: wspr-ai-lite (this project)
@@ -138,6 +158,8 @@ Pull requests are welcome!
 - **Phase 2**: wspr-ai-analytics (modernize [wspr-analytics](https://github.com/KI7MT/wspr-analytics))
   - Full analytics suite with ClickHouse, Grafana, AI Agents, and MCP integration
   - Designed for heavier infrastructure and richer analysis
+
+---
 
 ## 📜 License
 MIT — free to use for amateur radio and research.
