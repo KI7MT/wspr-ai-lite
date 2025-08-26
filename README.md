@@ -15,8 +15,8 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 ## Workflows and Packaging Status
 
 **Versions**
-![GitHub tag](https://img.shields.io/github/v/tag/KI7MT/wspr-ai-lite?sort=semver)
 [![GitHub release](https://img.shields.io/github/v/release/KI7MT/wspr-ai-lite)](https://github.com/KI7MT/wspr-ai-lite/releases)
+[![GitHub tag](https://img.shields.io/github/tag/KI7MT/wspr-ai-lite?sort=semver)](https://github.com/KI7MT/wspr-ai-lite/tags)
 [![PyPI version](https://img.shields.io/pypi/v/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 [![Python versions](https://img.shields.io/pypi/pyversions/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 
