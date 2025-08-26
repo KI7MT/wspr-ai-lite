@@ -36,7 +36,7 @@ Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit
 
 ---
 
-## Technology Stack
+## Technology Stack Key Benefits
 
 **MCP & AI Agents** — safe, structured access for AI assistants.
 - Controlled: manifest defines exactly what tools/queries are exposed.
@@ -127,11 +127,10 @@ make run         # launch Streamlit UI
 make test        # run pytest suite
 ```
 
+Makefile Usage
+- There is an extensive list of Makefile targets that simplify operations. See `make help` for a full list of available targets.
+
 ---
-
-## Makefile Usage
-
-There is an extensive list of Makefile targets that simplify operations. See `make help` for a full list of available targets.
 
 ## Get Help
 - **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)

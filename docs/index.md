@@ -23,7 +23,7 @@ It combines **DuckDB** for local storage, **Streamlit** for visualization, and i
 
 ---
 
-## Technology Stack
+## Technology Stack Key Benefits
 
 **MCP & AI Agents** — safe, structured access for AI assistants.
 - Controlled: manifest defines exactly what tools/queries are exposed.
