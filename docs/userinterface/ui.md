@@ -1,4 +1,4 @@
-# Streamlit UI Guide
+# User Interface Overview
 
 ## Launching the UI
 After ingesting data, launch the Streamlit dashboard:
@@ -29,6 +29,6 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
 ### Further Reading
-- [Ingest Data](ingest.md)
-- [Contributing](CONTRIBUTING.md)
-- [Roadmap](ROADMAP.md)
+- [Ingest Data](../ingest.md)
+- [Contributing](../CONTRIBUTING.md)
+- [Roadmap](../ROADMAP.md)

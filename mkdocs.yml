@@ -15,10 +15,10 @@ theme:
     - search.suggest
 
 nav:
-  - Home: index.md  # maps docs/README.md to site index
+  - Home: index.md
   - Quickstart: ingest.md
-  - User Setup: user-setup.md
-  - User Interface: ui.md
+  - User Guide: userguide/user-guide.md
+  - User Interface: userinterface/ui.md
   - Development:
     - Dev Setup: developer-setup.md
     - Makefile: makefile.md
@@ -38,19 +38,20 @@ nav:
 
 markdown_extensions:
   - admonition
+  - abbr
   - attr_list
   - def_list
-  - md_in_html
   - footnotes
-  - tables
-  - toc:
-      permalink: true
-  - pymdownx.details
-  - pymdownx.superfences
+  - md_in_html
+  - attr_list
   - pymdownx.highlight
   - pymdownx.inlinehilite
-  - pymdownx.magiclink
-  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.tabbed
+  - pymdownx.superfences
+  - toc:
+      permalink: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.emoji:

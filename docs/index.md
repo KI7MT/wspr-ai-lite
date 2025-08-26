@@ -20,7 +20,7 @@ It combines **DuckDB** for local storage, **Streamlit** for visualization, and i
 
 ## Documentation Index
 - [Ingest Data](ingest.md) — Fetch and normalize WSPRNet archives into DuckDB.
-- [UI Guide](ui.md) — Launch and navigate the Streamlit dashboard.
+- [UI Guide](userinterface/ui.md) — Launch and navigate the Streamlit dashboard.
 - [Developer Setup](developer-setup.md) — Get started contributing to wspr-ai-lite.
 
 ---
