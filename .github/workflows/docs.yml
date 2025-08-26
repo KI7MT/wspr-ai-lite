@@ -35,14 +35,14 @@ jobs:
 
       - name: Prepare docs assets
         run: |
-          cp CODE_OF_CONDUCT docs/CODE_OF_CONDUCT
-          cp CONTRIBUTING docs/CONTRIBUTING
+          cp CODE_OF_CONDUCT.md docs/CODE_OF_CONDUCT.md
+          cp CONTRIBUTING.md docs/CONTRIBUTING.md
           cp CONTRIBUTORS.md docs/CONTRIBUTORS.md
           if [ -f LICENSE ]; then cp LICENSE docs/LICENSE.md; fi
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
           if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
-          cp ROADMAP docs/ROADMAP
-          cp SECURITY docs/SECURITY
+          cp ROADMAP.md docs/ROADMAP.md
+          cp SECURITY.md docs/SECURITY.md
           cp SUPPORT.md docs/SUPPORT.md
 
       - name: Install MkDocs deps
