@@ -67,6 +67,8 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - Simple Installation: DuckDB can be installed with just a few lines of code, and on any platform.
 - In-Process Operation: It runs within as a host application, eliminating network latency and simplifying data access.
 
+---
+
 ## Quickstart (Recommended: PyPI)
 
 ### 1. Install from PyPI
