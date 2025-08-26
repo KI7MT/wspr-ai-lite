@@ -1,14 +1,9 @@
-# 📡 wspr-ai-lite
-
-**Lightweight WSPR analytics rendering tool employing DuckDB + Streamlit**
-
-Designed to be portable, and lightweight, `wspr-ai-lite` can be run on RasperyPI's or Enterprise Servers.
-The portability of Python makes it OS agnostic. The only limiting factor is disk space. The more archives you elect to add, the larger the diskspace footprint becomes. In future releases, we provide resource utilization stats for CPU, RAM an storage.
-
-## Resources
+# wspr-ai-lite
+Lightweight WSPR analytics and AI-ready backend using **DuckDB** + **Streamlit**, with safe query access via **MCP Agents**.
 
 [![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 [![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
+[![MCP](https://img.shields.io/badge/AI-Agent_Ready-MCP-green)](https://modelcontextprotocol.io/)
 [![Docs](https://img.shields.io/badge/docs-github_pages-blue)](https://KI7MT.github.io/wspr-ai-lite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -26,12 +21,6 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)
 [![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-
-## Get Help
-- **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)
-- **Request a feature** → [New Feature Request](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=feature_request.yml)
-- **Ask a question / share ideas** → [GitHub Discussions](https://github.com/KI7MT/wspr-ai-lite/discussions)
-- **Read the docs** → https://ki7mt.github.io/wspr-ai-lite/
 
 ## What Can You Do With It
 
@@ -155,6 +144,12 @@ smoke-verify         Verify the DuckDB contains rows
 test                 Run pytest
 venv                 Create Python virtual environment (.venv)
 ```
+
+## Get Help
+- **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)
+- **Request a feature** → [New Feature Request](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=feature_request.yml)
+- **Ask a question / share ideas** → [GitHub Discussions](https://github.com/KI7MT/wspr-ai-lite/discussions)
+- **Read the docs** → https://ki7mt.github.io/wspr-ai-lite/
 
 ## Acknowledgements
 - WSPRNet community for providing global weak-signal data
