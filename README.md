@@ -25,6 +25,7 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 [![Smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)
 [![pre-commit](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/pre-commit.yml)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 ## Get Help
 - **Report a bug** → [New Bug Report](https://github.com/KI7MT/wspr-ai-lite/issues/new?template=bug_report.yml)
