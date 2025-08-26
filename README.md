@@ -7,8 +7,6 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 
 ## Resources
 
-> 📌 See [Contributing Guidelines](https://github.com/KI7MT/wspr-ai-lite/blob/main/CONTRIBUTING.md) for commit conventions and development setup.
-
 [![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 [![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![Docs](https://img.shields.io/badge/docs-github_pages-blue)](https://KI7MT.github.io/wspr-ai-lite/)
