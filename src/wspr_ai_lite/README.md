@@ -124,8 +124,8 @@ There is an extensive list of Makefile targets that simplify operations. See `ma
 - **Read the docs** → https://ki7mt.github.io/wspr-ai-lite/
 
 ## Acknowledgements
-- Joe Taylor, K1JT, and the WSJT-X Development Team
 - WSPRNet community for providing global weak-signal data
+- Joe Taylor, K1JT, and the WSJT-X Development Team
 - Contributors to DuckDB and Streamlit
 - Amateur radio operators worldwide who share spots and keep the network alive
 
