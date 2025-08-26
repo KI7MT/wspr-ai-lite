@@ -35,15 +35,13 @@ jobs:
 
       - name: Prepare docs assets
         run: |
-          cp CODE_OF_CONDUCT.md docs/CODE_OF_CONDUCT.md
-          cp CONTRIBUTING.md docs/CONTRIBUTING.md
-          cp CONTRIBUTORS.md docs/CONTRIBUTORS.md
-          if [ -f LICENSE ]; then cp LICENSE docs/LICENSE.md; fi
-          if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
-          if [ -f LICENSE.md ]; then cp LICENSE.md docs/LICENSE.md; fi
-          cp ROADMAP.md docs/ROADMAP.md
-          cp SECURITY.md docs/SECURITY.md
-          cp SUPPORT.md docs/SUPPORT.md
+
+      - name: Prepare docs assets (rsync)
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          rsync -a --copy-links CODE_OF_CONDUCT.md CONTRIBUTING.md CONTRIBUTORS.md ROADMAP.md SECURITY.md SUPPORT.md docs/ || true
+          if [ -f LICENSE.md ]; then rsync -a --copy-links LICENSE.md docs/LICENSE.md; elif [ -f LICENSE ]; then rsync -a --copy-links LICENSE docs/LICENSE.md; fi
 
       - name: Install MkDocs deps
         run: |
