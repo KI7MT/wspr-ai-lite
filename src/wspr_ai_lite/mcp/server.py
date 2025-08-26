@@ -44,12 +44,19 @@ from pathlib import Path
 from wspr_ai_lite.ingest import ensure_table  # reuse schema creator
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List, Tuple
+from pathlib import Path
 import json
 import os
+import signal
+import subprocess
+import sys
+import time
 
 # third-party
 import duckdb
 import click
+
+from .. import __version__  # reuse package version
 
 # --- Optional MCP decorator shim ---------------------------------
 # Try the real MCP decorator; fall back to a no-op so the server/CLI
@@ -67,7 +74,7 @@ except Exception:  # pragma: no cover
 # ---------------------------------------------------------------------
 
 DB_PATH = os.environ.get("WSPR_DB", "data/wspr.duckdb")
-
+PID_FILE = Path(".wspr_mcp.pid")  # or Path(DB_PATH).with_suffix(".mcp.pid")
 
 def conn(read_only: bool = True, init: bool = False) -> duckdb.DuckDBPyConnection:
     """
@@ -532,13 +539,162 @@ def spot_by_id(spot_id: int) -> Dict[str, Any]:
     rec = _df_records_iso(df)[0]
     return {"row": rec}
 
+
+# ---------------------------------------------------------------------
+# MCP: Service help functions implemented as of v.3.0.8
+# ---------------------------------------------------------------------
+
+def _read_pid() -> int | None:
+    """Read the MCP Pid FIle"""
+    try:
+        return int(PID_FILE.read_text().strip())
+    except Exception:
+        return None
+
+def _is_running(pid: int) -> bool:
+    """Check if MCP service is running"""
+    try:
+        os.kill(pid, 0)  # POSIX check
+        return True
+    except Exception:
+        # On Windows, os.kill with 0 isn’t reliable; try a psutil fallback if you want.
+        return False
+
+def _terminate_pid(pid: int, timeout: float = 10.0) -> bool:
+    """Terminate the PID file"""
+    try:
+        if os.name == "posix":
+            os.kill(pid, signal.SIGTERM)
+        else:
+            # best-effort cross-platform; you can add psutil for better control
+            try:
+                import psutil  # optional dep
+                psutil.Process(pid).terminate()
+            except Exception:
+                # Fall back to taskkill on Windows
+                if sys.platform.startswith("win"):
+                    subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], check=False)
+        # wait a bit
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if not _is_running(pid):
+                return True
+            time.sleep(0.2)
+    except Exception:
+        pass
+    return not _is_running(pid)
+
+# ---------------------------------------------------------------------
+# MCP: Control Groups Functions not implemented as of v.3.0.8
+# ---------------------------------------------------------------------
+
+# @click.group()
+# def cli() -> None:
+#     """wspr-ai-lite MCP server controller."""
+#     pass
+
+@cli.command()
+@click.option("--db", "db_path", default="data/wspr.duckdb", show_default=True,
+              help="Path to DuckDB database file.")
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", default=8765, show_default=True, type=int)
+@click.option("--init", is_flag=True, help="Initialize schema if missing (opens DB read-write once).")
+def serve(db_path: str, host: str, port: int, init: bool) -> None:
+    """Run the MCP server in the foreground (blocking)."""
+    # (your existing open/ensure schema code)
+    global DB_PATH
+    DB_PATH = db_path
+    mode = "rw" if init else "ro"
+    click.echo(f"[mcp] Using database: {db_path} (mode={mode})")
+
+    try:
+        with conn(read_only=not init, init=init) as c:
+            _ = c.execute("SELECT COUNT(*) FROM spots").fetchone()
+    except Exception as e:
+        click.echo(f"[mcp] Error opening database: {e}", err=True)
+        raise SystemExit(1)
+
+    # TODO: replace this stub with your real server (uvicorn or MCP runtime)
+    click.echo(f"[mcp] Serving on {host}:{port} (Ctrl+C to stop)")
+    try:
+        while True:
+            time.sleep(1.0)
+    except KeyboardInterrupt:
+        click.echo("[mcp] Shutting down.")
+
+@cli.command()
+@click.option("--db", "db_path", default="data/wspr.duckdb", show_default=True)
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", default=8765, show_default=True, type=int)
+@click.option("--init", is_flag=True, help="Initialize schema before serving.")
+def start(db_path: str, host: str, port: int, init: bool) -> None:
+    """Start the MCP server in the background."""
+    if PID_FILE.exists():
+        pid = _read_pid()
+        if pid and _is_running(pid):
+            click.secho(f"[mcp] Already running (pid {pid}).", fg="yellow")
+            return
+        PID_FILE.unlink(missing_ok=True)
+
+    cmd = [sys.executable, "-m", "wspr_ai_lite.mcp.server", "serve",
+           "--db", db_path, "--host", host, "--port", str(port)]
+    if init:
+        cmd.append("--init")
+
+    # Launch detached-ish process
+    if os.name == "posix":
+        proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                start_new_session=True)
+    else:
+        # Windows
+        CREATE_NO_WINDOW = 0x08000000
+        DETACHED_PROCESS = 0x00000008
+        proc = subprocess.Popen(cmd, creationflags=DETACHED_PROCESS | CREATE_NO_WINDOW,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    PID_FILE.write_text(str(proc.pid))
+    click.secho(f"[mcp] Started (pid {proc.pid}).", fg="green")
+
+@cli.command()
+def stop() -> None:
+    """Stop the MCP server."""
+    pid = _read_pid()
+    if not pid:
+        click.secho("[mcp] Not running (no PID file).", fg="yellow")
+        return
+    if _terminate_pid(pid):
+        PID_FILE.unlink(missing_ok=True)
+        click.secho("[mcp] Stopped.", fg="green")
+    else:
+        click.secho("[mcp] Could not stop process.", fg="red")
+        raise SystemExit(1)
+
+@cli.command()
+def status() -> None:
+    """Show server status."""
+    pid = _read_pid()
+    if pid and _is_running(pid):
+        click.secho(f"[mcp] Running (pid {pid}).", fg="green")
+    else:
+        click.secho("[mcp] Not running.", fg="yellow")
+
+@cli.command()
+@click.option("--db", "db_path", default="data/wspr.duckdb", show_default=True)
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", default=8765, show_default=True, type=int)
+@click.option("--init", is_flag=True)
+def restart(db_path: str, host: str, port: int, init: bool) -> None:
+    """Restart the MCP server."""
+    try:
+        cli.commands["stop"].callback()  # stop
+    except Exception:
+        pass
+    cli.commands["start"].callback(db_path=db_path, host=host, port=port, init=init)
+
 # ---------------------------------------------------------------------
 # MCP: CLI entrypoint
 # Run with: wspr-ai-lite-mcp --db data/wspr.duckdb --port 8765 [--init]
 # ---------------------------------------------------------------------
-
-import click
-from .. import __version__  # reuse package version
 
 @click.command()
 @click.version_option(__version__, prog_name="wspr-ai-lite-mcp")
@@ -548,7 +704,7 @@ from .. import __version__  # reuse package version
               help="TCP port to serve the MCP API on.")
 @click.option("--init", is_flag=True, default=False,
               help="Initialize database if missing and ensure schema exists.")
-def main(db_path: str, port: int, init: bool) -> None:
+def cli(db_path: str, port: int, init: bool) -> None:
     """
     Run the wspr-ai-lite MCP server.
 
@@ -575,4 +731,4 @@ def main(db_path: str, port: int, init: bool) -> None:
     click.echo(f"[mcp] (stub) would start MCP server on port {port}")
 
 if __name__ == "__main__":
-    main()
+    cli()

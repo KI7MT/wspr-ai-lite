@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wspr-ai-lite"
-version = "0.3.7"
+version = "0.3.8"
 requires-python = ">=3.11"
 readme = "README.md"
 description = "Lightweight WSPR analytics: DuckDB ingest + Streamlit dashboard."
@@ -57,10 +57,11 @@ docs = [
 packages = ["src/wspr_ai_lite"]
 
 [project.scripts]
-wspr-ai-lite = "wspr_ai_lite.cli:main"
-wspr-lite = "wspr_ai_lite.cli:deprecated_entrypoint"
-wspr-ai-lite-mcp = "wspr_ai_lite.mcp.server:main"
+wspr-ai-lite = "wspr_ai_lite.cli:cli"
+wspr-ai-lite-mcp = "wspr_ai_lite.mcp.server:cli"
 wspr-ai-lite-tools = "wspr_ai_lite.tools:cli"
+wspr-ai-lite-fetch = "wspr_ai_lite.fetch:cli"
+wspr-lite = "wspr_ai_lite.cli:deprecated_entrypoint"
 
 [project.urls]
 Homepage = "https://github.com/KI7MT/wspr-ai-lite"

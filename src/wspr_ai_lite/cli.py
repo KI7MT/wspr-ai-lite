@@ -1,115 +1,95 @@
 from __future__ import annotations
 
-"""Console entrypoint for wspr-ai-lite.
+"""
+Click CLI for wspr-ai-lite.
 
 Subcommands:
-- `fetch`  : Download monthly WSPRNet archives into a cache directory.
-- `ingest` : Parse staged (or freshly downloaded) archives and insert into DuckDB.
-- `ui`     : Launch the Streamlit dashboard that reads from the DuckDB file.
+  - ingest : download/parse monthly archives and insert into DuckDB
+  - ui     : launch the Streamlit app
 
-Usage examples:
-    wspr-ai-lite fetch --from 2014-07 --to 2014-09 --cache .cache
-    wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb --cache .cache
-    wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb --offline
-    wspr-ai-lite ui --db data/wspr.duckdb --port 8501
+This module must export `cli` for the project entry point:
+  wspr-ai-lite = "wspr_ai_lite.cli:cli"
 """
 
 import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 import click
 import duckdb
 
 from . import __version__
-from .ingest import ingest_month, month_range, download_month
+from .ingest import ingest_month, month_range
 
 
-@click.group(context_settings={"help_option_names": ["-h", "--help"]})
-@click.version_option(version=__version__, prog_name="wspr-ai-lite")
-def main() -> None:
-    """WSPR AI Lite utilities (CLI)."""
-    pass
+# ----------------------------- helpers -----------------------------
 
-
-# -----------------------------
-# fetch
-# -----------------------------
-@main.command()
-@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
-@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
-@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True, help="Cache directory")
-@click.option("--force", is_flag=True, default=False, help="Re-download even if file exists")
-def fetch(start: str, end: str, cache: Path, force: bool) -> None:
-    """Download monthly .csv.gz archives into a cache directory."""
-    cache.mkdir(parents=True, exist_ok=True)
-
-    downloaded = 0
-    for y, m in month_range(start, end):
-        gz_path = cache / f"wsprspots-{y:04d}-{m:02d}.csv.gz"
-        if force and gz_path.exists():
-            try:
-                gz_path.unlink()
-            except OSError:
-                pass
-        download_month(y, m, cache_dir=cache)
-        click.echo(f"[staged] {gz_path}")
-        downloaded += 1
-
-    click.secho(f"[done] staged {downloaded} file(s) in {cache}", fg="green")
-
-
-# -----------------------------
-# ingest
-# -----------------------------
-@main.command()
-@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
-@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
-@click.option("--db", type=click.Path(path_type=Path), default=Path("data/wspr.duckdb"), show_default=True, help="DuckDB path")
-@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True, help="Cache directory")
-@click.option("--offline", is_flag=True, default=False, help="Read only from cache (no network)")
-def ingest(start: str, end: str, db: Path, cache: Path, offline: bool) -> None:
-    """Ingest one or more months into DuckDB (canonical schema)."""
-    db.parent.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect(str(db))
-
-    total = 0
-    for y, m in month_range(start, end):
-        total += ingest_month(con, y, m, cache_dir=cache, offline=offline)
-
-    click.secho(f"[OK] inserted rows: {total}", fg="green")
-
-
-# -----------------------------
-# ui
-# -----------------------------
 def _app_path() -> Path:
-    """Resolve the Streamlit app path (packaged first, then dev fallback)."""
+    """
+    Resolve the Streamlit app path.
+
+    1) Packaged wheel: wspr_ai_lite/wspr_ai_lite.py (alongside this file)
+    2) Dev fallback:   repo-root/app/wspr_ai_lite.py
+    """
     packaged = Path(__file__).with_name("wspr_ai_lite.py")
     if packaged.exists():
         return packaged
+    # dev fallback (useful when running from source)
     return Path(__file__).resolve().parents[2] / "app" / "wspr_ai_lite.py"
 
 
-@main.command()
-@click.option("--db", type=click.Path(path_type=Path), default=Path("data/wspr.duckdb"), show_default=True, help="DuckDB path")
-@click.option("--port", type=int, default=8501, show_default=True, help="Streamlit port")
-def ui(db: Path, port: int) -> None:
-    """Run Streamlit UI."""
+# ----------------------------- CLI root -----------------------------
+
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+@click.version_option(__version__, "-V", "--version", prog_name="wspr-ai-lite")
+def cli() -> None:
+    """wspr-ai-lite command line interface."""
+    # group entry point (no-op)
+    pass
+
+
+# ----------------------------- commands -----------------------------
+
+@cli.command("ingest")
+@click.option("--from", "start", required=True, help="Start month, YYYY-MM (e.g., 2014-07)")
+@click.option("--to", "end", required=True, help="End month, YYYY-MM (inclusive)")
+@click.option("--db", "db_path", default="data/wspr.duckdb", show_default=True, help="DuckDB file path")
+@click.option("--cache", default=".cache", show_default=True, help="Directory to store/download monthly .csv.gz files")
+@click.option("--offline", is_flag=True, default=False, help="Use cache only; do not download if missing")
+def cmd_ingest(start: str, end: str, db_path: str, cache: str, offline: bool) -> None:
+    """
+    Ingest monthly WSPRNet archives into a local DuckDB.
+    """
+    Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+    total = 0
+    with duckdb.connect(db_path) as con:
+        for y, m in month_range(start, end):
+            total += ingest_month(con, y, m, cache_dir=cache, offline=offline)
+    click.secho(f"[OK] inserted rows: {total:,}", fg="green")
+
+
+@cli.command("ui")
+@click.option("--db", "db_path", default="data/wspr.duckdb", show_default=True, help="DuckDB file path")
+@click.option("--port", default=8501, show_default=True, type=int, help="Streamlit port")
+def cmd_ui(db_path: str, port: int) -> None:
+    """
+    Launch the Streamlit UI against a DuckDB database.
+    """
     app_path = _app_path()
     if not app_path.exists():
         click.secho(
-            f"ERROR: Cannot find Streamlit app at {app_path}\n"
-            "This likely means the package app file was not included in the install.",
+            f"ERROR: cannot find Streamlit app at {app_path}\n"
+            "The package app file may be missing from the install.",
             fg="red",
             err=True,
         )
-        sys.exit(1)
+        raise SystemExit(1)
 
+    # set env for the app to pick up DB path
     env = os.environ.copy()
-    if db:
-        env["WSPR_DB_PATH"] = str(db)
+    env["WSPR_DB_PATH"] = db_path
 
     try:
         code = subprocess.call(
@@ -118,28 +98,26 @@ def ui(db: Path, port: int) -> None:
         )
     except ModuleNotFoundError:
         click.secho(
-            "ERROR: Streamlit is not installed in this environment.\n"
-            "Install it with:\n\n    pip install streamlit\n",
+            "ERROR: Streamlit is not installed.\nInstall with:\n\n    pip install streamlit\n",
             fg="red",
             err=True,
         )
-        sys.exit(1)
+        raise SystemExit(1)
 
-    sys.exit(code)
+    raise SystemExit(code)
 
 
-# -----------------------------
-# Deprecated alias
-# -----------------------------
+# ----------------------------- deprecated alias -----------------------------
+
 def deprecated_entrypoint() -> None:
-    """Shim for old command name."""
+    """Shim for old command name `wspr-lite`."""
     click.secho(
         "WARNING: The `wspr-lite` entrypoint is deprecated.\n"
         "Please use the new command: `wspr-ai-lite`.\n",
         fg="yellow",
     )
-    main()
+    cli()  # delegate to the Click group
 
 
 if __name__ == "__main__":
-    main()
+    cli()

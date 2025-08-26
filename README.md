@@ -37,12 +37,12 @@ The portability of Python makes it OS agnostic. The only limiting factor is disk
 
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 
-- 📊 SNR distributions & monthly spot trends
-- 👂 Top reporters, most-heard TX stations
-- 🌍 Geographic spread & distance/DX analysis
-- 🔄 QSO-like reciprocal reports
-- ⏱ Hourly activity heatmaps & yearly unique counts
-- 🚀 Works on **Windows, Linux, macOS** — no heavy server required.
+- SNR distributions & monthly spot trends
+- Top reporters, most-heard TX stations
+- Geographic spread & distance/DX analysis
+- QSO-like reciprocal reports
+- Hourly activity heatmaps & yearly unique counts
+- Works on **Windows, Linux, macOS** — no heavy server required.
 
 ## Key Features
 - Local DuckDB storage with efficient ingest + caching
@@ -61,8 +61,10 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 ## Quickstart (Recommended: PyPI)
 
 ### 1. Install from PyPI
+
+> optional but recommended: [create a Pyton virtual environment](https://docs.python.org/3/library/venv.html) firstß
+
 ```bash
-# optional but recommended: create a virtualenv first
 python3 -m venv .venv && source .venv/bin/activate
 pip install wspr-ai-lite
 ```
@@ -70,8 +72,9 @@ pip install wspr-ai-lite
 ### 2. Ingest Data
 Fetch WSPRNet monthly archives and load them into DuckDB:
 
+> adjust the range as needed, but be reasonable!
+
 ```bash
-# adjust the range as needed, but be reasonable!
 wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
 ```
 - Downloads compressed monthly CSVs (caches locally in .cache/)
@@ -85,7 +88,6 @@ wspr-ai-lite ui --db data/wspr.duckdb --port 8501
 Open http://localhost:8501 in your browser 🎉
 
 👉 For developers who want to hack on the code directly, see [Developer Setup](https://ki7mt.github.io/wspr-ai-lite/DEV_SETUP/).
-
 
 ## Example Visualizations
 - SNR Distribution by Count
@@ -150,7 +152,7 @@ smoke-test-pypi      Install from PyPI and run verify+ui-check
 smoke-test           Full end-to-end smoke test
 smoke-ui-check       Check UI presence and streamlit availability
 smoke-verify         Verify the DuckDB contains rows
-test                  Run pytest
+test                 Run pytest
 venv                 Create Python virtual environment (.venv)
 ```
 

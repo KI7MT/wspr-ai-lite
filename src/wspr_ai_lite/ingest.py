@@ -30,7 +30,7 @@ import zipfile
 import duckdb
 import pandas as pd
 import requests
-import click
+# import click
 
 # Canonical column order (must match inserts)
 _CANON_COLS = [
@@ -384,49 +384,3 @@ def ingest_month(
 
     print(f"[OK] {year:04d}-{month:02d} ({len(df):,} rows)")
     return int(len(df))
-
-# ----------------------------
-# Optional Click CLI (module-local)
-# ----------------------------
-
-@click.group(context_settings={"help_option_names": ["-h", "--help"]})
-def _cli() -> None:
-    """Local ingest/fetch commands (use `wspr-ai-lite` for the main CLI)."""
-    pass
-
-@_cli.command("fetch")
-@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
-@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
-@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True)
-@click.option("--force", is_flag=True, default=False, help="Re-download even if file exists")
-def _fetch_cmd(start: str, end: str, cache: Path, force: bool) -> None:
-    """Download monthly .csv.gz archives into a cache directory."""
-    cache.mkdir(parents=True, exist_ok=True)
-    n = 0
-    for y, m in month_range(start, end):
-        p = _cache_path(cache, y, m)
-        if force and p.exists():
-            try: p.unlink()
-            except OSError: pass
-        download_month(y, m, cache_dir=cache)
-        click.echo(f"[staged] {p}")
-        n += 1
-    click.secho(f"[done] staged {n} file(s) in {cache}", fg="green")
-
-@_cli.command("ingest")
-@click.option("--from", "start", required=True, help="Start month (YYYY-MM)")
-@click.option("--to", "end", required=True, help="End month (YYYY-MM)")
-@click.option("--db", type=click.Path(path_type=Path), default=Path("data/wspr.duckdb"), show_default=True)
-@click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True)
-@click.option("--offline", is_flag=True, default=False, help="Read only from cache (no network)")
-def _ingest_cmd(start: str, end: str, db: Path, cache: Path, offline: bool) -> None:
-    """Ingest one or more months into DuckDB (canonical schema)."""
-    db.parent.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect(str(db))
-    total = 0
-    for y, m in month_range(start, end):
-        total += ingest_month(con, y, m, cache_dir=cache, offline=offline)
-    click.secho(f"[OK] inserted rows: {total}", fg="green")
-
-if __name__ == "__main__":
-    _cli()

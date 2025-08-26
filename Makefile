@@ -166,7 +166,8 @@ docs-serve: ## Serve docs locally with MkDocs (auto-reloads on changes)
 
 # ---- Smoke tests (end-to-end) ------------------------------------------------
 
-smoke-test: smoke-clean smoke-build smoke-install smoke-ingest smoke-verify smoke-ui-check ## Full end-to-end smoke test
+# Run the wiring audit before everything else
+smoke-test: audit-cli-wiring smoke-clean smoke-build smoke-install smoke-ingest smoke-verify smoke-ui-check ## Full end-to-end smoke test
 
 smoke-build: ## Build wheel+sdist for smoke test
 	@python -m pip install --disable-pip-version-check --upgrade pip build >/dev/null
@@ -216,3 +217,16 @@ smoke-test-pypi: smoke-clean ## Install from PyPI and run verify+ui-check
 .PHONY: db-views
 db-views: ## Create/refresh computed views (spots_v)
 	@$(ACT); $(PY) scripts/create_views.py --db $(DB)
+
+
+.PHONY: audit-cli-wiring
+audit-cli-wiring: ## Check for stray Click decorators in
+	@echo "[audit] checking for stray Click decorators in libs..."
+	@! grep -Rnw src/wspr_ai_lite -e '@cli\.command' -e '@click\.command' -e '@click\.group' \
+	  | grep -vE '(cli\.py|tools\.py|mcp/server\.py|fetch\.py)' || \
+	  (echo "Found stray CLI decorators in library modules"; exit 1)
+	@echo "[audit] checking for __main__ blocks in libs..."
+	@! grep -Rnw src/wspr_ai_lite -e '__name__\s*==\s*["'\'']__main__["'\'']' \
+	  | grep -vE '(cli\.py|tools\.py|mcp/server\.py|fetch\.py)' || \
+	  (echo "Found __main__ entrypoints in library modules"; exit 1)
+	@echo "[audit] OK"

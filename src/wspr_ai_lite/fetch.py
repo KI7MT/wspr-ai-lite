@@ -65,11 +65,12 @@ def fetch_range(start: str, end: str, cache_dir: Path, skip_existing: bool = Tru
 @click.option("--cache", type=click.Path(path_type=Path), default=Path(".cache"), show_default=True)
 @click.option("--skip-existing/--force", default=True, show_default=True,
               help="Skip files that already exist in cache (or force re-download)")
-def _cli(start: str, end: str, cache: Path, skip_existing: bool) -> None:
+@click.version_option(version=__version__, prog_name="wspr-ai-lite")
+def cli(start: str, end: str, cache: Path, skip_existing: bool) -> None:
     """Download monthly .csv.gz archives into a cache directory."""
     paths = fetch_range(start, end, cache, skip_existing=skip_existing)
     click.secho(f"[done] staged {len(paths)} file(s) in {cache}", fg="green")
 
 
 if __name__ == "__main__":
-    _cli()
+    cli()

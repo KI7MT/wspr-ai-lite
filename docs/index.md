@@ -1,4 +1,4 @@
-# 📚 WSPR AI Lite Documentation
+# WSPR AI Lite Documentation
 
 Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashboard built with **DuckDB** and **Streamlit**.
 
@@ -14,40 +14,44 @@ Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashbo
 
 📘 Tip: The navigation menu on the left provides the same structure.
 
-## ✨ About
+## About
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
 
-- 📊 SNR distributions & monthly spot trends
-- 👂 Top reporters, most-heard TX stations
-- 🌍 Geographic spread & distance/DX analysis
-- 🔄 QSO-like reciprocal reports
-- ⏱ Hourly activity heatmaps & yearly unique counts
+- SNR distributions & monthly spot trends
+- Top reporters, most-heard TX stations
+- Geographic spread & distance/DX analysis
+- QSO-like reciprocal reports
+- Hourly activity heatmaps & yearly unique counts
 
 Works on **Windows, Linux, macOS** — no heavy server required.
 
-## Build & Serve
+## Quickstart ( Recommended: PyPI)
 
-Install docs tooling:
+### 1. Install from PyPI ( Python Package Repository )
 
-```bash
-pip install mkdocs mkdocs-material mkdocs-material-extensions
-```
-
-Serve locally:
+> optional but recommended: [create a Pyton virtual environment](https://docs.python.org/3/library/venv.html) first
 
 ```bash
-# if no version is stipulated, the version will fall back to the last --tagged version
-mkdocs serve
+python3 -m venv .venv && source .venv/bin/activate
+pip install wspr-ai-lite
 ```
 
-Set a specific Version when bulding
-```bash
-WSPR_AI_LITE_VERSION=$(python -c "import wspr_ai_lite as m; print(getattr(m,'__version__','dev'))") \
-mkdocs serve
-```
+### 2. Ingest Data
+Fetch WSPRNet monthly archives and load them into DuckDB:
 
-Deploy to GitHub Pages:
+> adjust the range as needed, but be reasonable!
 
 ```bash
-mkdocs gh-deploy --force
+wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
 ```
+- Downloads compressed monthly CSVs (caches locally in .cache/)
+- Normalizes into data/wspr.duckdb
+- Adds extra fields (band, reporter grid, tx grid)
+
+### 3. Launch the Dashboard
+```bash
+wspr-ai-lite ui --db data/wspr.duckdb --port 8501
+```
+Open http://localhost:8501 in your browser 🎉
+
+👉 For developers who want to hack on the code directly, see [Developer Setup](https://ki7mt.github.io/wspr-ai-lite/DEV_SETUP/).

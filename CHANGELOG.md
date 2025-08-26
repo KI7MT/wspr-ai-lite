@@ -6,10 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.8] - 2025-08-26
+### Fixed
+- Removed stray `@cli.command` decorators from `ingest.py` (ingest is a library, not a CLI).
+- Standardized all entrypoints in `pyproject.toml` to use `:cli` naming convention.
+- Ensured no duplicate or undefined `main()` vs `cli()` confusion across commands.
+
+### Added
+- New `make audit-cli-wiring` target:
+  - Verifies no stray Click decorators or `__main__` blocks in library modules.
+  - Prevents CLI/lib separation regressions.
+- Extended smoke tests to cover CLI wiring consistency.
+
 ### Changed
-- Consolidated roadmap documents:
-  - Merged `Roadmap-v0.4.0.md` into the canonical `ROADMAP.md`.
-  - Removed duplicate file to maintain a single source of truth for project planning.
+- `wspr-ai-lite-mcp` kept as a single-command CLI (`click.command`), preparing for future multi-command layout in v0.4.0.
+- Documentation clarified around MCP server stub vs. UI and ingest pipelines.
+
+---
+
+[0.3.8]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.7...v0.3.8
 
 ## [0.3.7] - 2025-08-25
 
