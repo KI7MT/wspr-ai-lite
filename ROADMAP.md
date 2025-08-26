@@ -1,66 +1,42 @@
-# wspr-ai-lite — v0.4.0 Roadmap
+# Project Roadmap
 
-Focus: UI/UX improvements, new CLI helpers, and laying MCP/Agent foundations.
-The 0.3.x series concentrated on packaging, CI/CD, and stability.
-
----
-
-## 1) User Experience (UI/UX)
-
-- **Multi-Page Layout** (Streamlit `pages/` directory)
-  - 📊 **Overview Dashboard** — summary stats, spot counts, unique TX/RX, activity heatmap.
-  - 📡 **Propagation Explorer** — distance histograms, DX map.
-  - 🎚 **Station Reports** — per-callsign breakdowns (RX/TX).
-  - ⏱ **QSO Explorer** — reciprocal TX/RX window search.
-
-- **Visual polish**
-  - Consistent title-casing and units (MHz, dB, km).
-  - Tooltips, filters, slicers (time, band, SNR).
-  - Layout refinements (columns, tabs, expanders).
+This document outlines the planned features, improvements, and direction for **wspr-ai-lite**.
+The roadmap is a living document and may evolve as priorities shift.
 
 ---
 
-## 2) Ease of Use
-- First-run guide if DB missing (ingest steps & sample command).
-- Smarter caching: show cache location, size, and “clear cache” helper.
-- Optional config file: `~/.wspr-ai-lite.toml` for default DB/cache.
+## v0.4.0 (Planned)
+- **UI Enhancements**
+  - Refine Streamlit dashboards to ensure all panels align with canonical schema.
+  - Improve filtering (multi-band, multi-year queries).
+  - Add export options (CSV/Parquet) for selected results.
+
+- **MCP / Agent Integration**
+  - Replace stubbed MCP server with a working implementation (likely via uvicorn).
+  - Support real-time query handling through the MCP contract.
+  - Explore initial agent integration workflows.
+
+- **Cross-Platform Ingestion**
+  - Support both `*.csv.gz` (Linux/macOS) and `*.zip` (Windows) archives.
+  - Unified interface for fetch/ingest regardless of platform.
+
+- **Tooling**
+  - Extend `wspr-ai-lite-tools` with additional commands:
+    - `analyze` for data summaries (SNR, distance, TX/RX trends).
+    - `repair` for fixing or deduplicating rows.
+  - Strengthen schema verification with optional auto-fix.
 
 ---
 
-## 3) CLI Enhancements
-- `wspr-ai-lite stats` — total rows, distinct TX/RX, bands, min/max timestamps.
-- `wspr-ai-lite verify` — table/column checks, simple integrity assertions.
+## Longer-Term Ideas
+- **ClickHouse backend** for large-scale deployments.
+- **WebSocket live feed** for near-real-time spots ingest.
+- **Agent workflows** with natural-language queries against MCP.
+- **Packaging**: Windows binaries via PyInstaller.
+- **Documentation**: Expand “getting started” with platform-specific guides.
 
 ---
 
-## 4) Agent / MCP Foundations
-- Extract a small internal API layer:
-  - `wspr_ai_lite.api.query_spots()`
-  - `wspr_ai_lite.api.get_summary()`
-- Provide an MCP manifest stub for local experimentation.
-
----
-
-## 5) Testing & Quality
-- Smoke: run Streamlit with a tiny DB and confirm app loads (beyond import).
-- Unit tests for `stats` and `verify`.
-- Keep pre-commit + interrogate docstring coverage ≥ 80%.
-
----
-
-## 6) Docs
-- **User Guide**: multi-page walkthrough, QSO examples.
-- **Developer Guide**: adding pages, extending CLI.
-- **Changelog** remains single source; consider automation later.
-
----
-
-### Deliverables for 0.4.0
-- `src/wspr_ai_lite/pages/` with at least:
-  - `01_Overview.py`
-  - `02_Propagation.py`
-- New CLI commands: `stats`, `verify`
-- `wspr_ai_lite/api.py` with simple query helpers
-- MCP manifest stub
-- Updated Makefile & smoke tests
-- Docs updated (User + Dev)
+## Notes
+- Changes targeting a specific release will also be tracked in `CHANGELOG.md`.
+- This file remains the high-level vision; implementation details live in issues and PRs.
