@@ -2,10 +2,6 @@
 
 Welcome to the docs for **wspr-ai-lite** — a lightweight WSPR analytics dashboard built with **DuckDB** and **Streamlit**.
 
-# WSPR-AI-Lite Documentation
-
-Welcome to the documentation for **WSPR-AI-Lite** — a lightweight tool for exploring WSPRNet data with **DuckDB** and **Streamlit**.
-
 ## Quick Links
 
 - [User Setup](user-setup.md) — Installation & usage guide for end users

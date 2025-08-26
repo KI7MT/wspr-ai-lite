@@ -26,10 +26,10 @@ nav:
   - Developer Setup: developer-setup.md
   - Testing: testing.md
   - Makefile: makefile.md
-  - Troubleshooting: troubleshooting.md
   - Process Release: process-release.md
   - WSPR Data Schema: schema.md
   - Ingest CSV: ingest.md
+  - Troubleshooting: troubleshooting.md
 
 markdown_extensions:
   - admonition
