@@ -36,6 +36,26 @@ Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit
 
 ---
 
+## Technology Stack
+
+**MCP & AI Agents** — safe, structured access for AI assistants.
+- Controlled: manifest defines exactly what tools/queries are exposed.
+- Interoperable: model-agnostic, works across many LLMs.
+- Extendable: add analytics or summary tools without altering the DB/UI.
+- Future-ready: aligns with open standards for AI-assisted research.
+
+**DuckDB** — an embedded, columnar SQL database optimized for analytics.
+- High performance: in-memory processing, vectorized execution, columnar storage.
+- Lightweight: no external server needed, works anywhere Python runs.
+- Flexible: reads/writes CSV, Parquet, JSON; integrates directly with Pandas.
+
+**Streamlit** — a Python-first framework for interactive data apps.
+- Rapid prototyping: build dashboards with just Python.
+- Interactive: real-time widgets, dynamic filters, custom layouts.
+- Visualization: integrates with Matplotlib, Plotly, Altair, and more.
+
+---
+
 ## What Can You Do With It
 
 Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local dashboard:
@@ -46,26 +66,6 @@ Explore **Weak Signal Propagation Reporter (WSPR)** data with an easy, local das
 - QSO-like reciprocal reports
 - Hourly activity heatmaps & yearly unique counts
 - Works on **Windows, Linux, macOS** — no heavy server required.
-
----
-
-## Key Features
-- Local DuckDB storage with efficient ingest + caching
-- Streamlit UI for interactive exploration
-- Distance/DX analysis with Maidenhead grid conversion
-- QSO-like reciprocal finder with configurable time window
-
----
-
-## Fast Performance
-- Columnar Storage: DuckDB is a columnar database, which allows for better data compression and faster query execution.
-- Vectorization: processes data in batches, optimized CPU usage, significantly faster than traditional OLTP databases.
-
----
-
-## Ease of Use
-- Simple Installation: DuckDB can be installed with just a few lines of code, and on any platform.
-- In-Process Operation: It runs within as a host application, eliminating network latency and simplifying data access.
 
 ---
 

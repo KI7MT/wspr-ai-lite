@@ -15,6 +15,28 @@ Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit
 `wspr-ai-lite` is a lightweight analytics tool for **Weak Signal Propagation (WSPR)** data.
 It combines **DuckDB** for local storage, **Streamlit** for visualization, and is now **AI-Agent ready** via MCP.
 
+---
+
+## Technology Stack
+
+**MCP & AI Agents** — safe, structured access for AI assistants.
+- Controlled: manifest defines exactly what tools/queries are exposed.
+- Interoperable: model-agnostic, works across many LLMs.
+- Extendable: add analytics or summary tools without altering the DB/UI.
+- Future-ready: aligns with open standards for AI-assisted research.
+
+**DuckDB** — an embedded, columnar SQL database optimized for analytics.
+- High performance: in-memory processing, vectorized execution, columnar storage.
+- Lightweight: no external server needed, works anywhere Python runs.
+- Flexible: reads/writes CSV, Parquet, JSON; integrates directly with Pandas.
+
+**Streamlit** — a Python-first framework for interactive data apps.
+- Rapid prototyping: build dashboards with just Python.
+- Interactive: real-time widgets, dynamic filters, custom layouts.
+- Visualization: integrates with Matplotlib, Plotly, Altair, and more.
+
+---
+
 ## Quick Workflow
 1. **Fetch + Ingest Data** → Download WSPRNet monthly archives, normalize into DuckDB.
 2. **Explore in UI** → Interactive dashboard with SNR, trends, distance/DX, activity heatmaps.
@@ -26,6 +48,7 @@ It combines **DuckDB** for local storage, **Streamlit** for visualization, and i
 - [Developer Setup](development/developer-setup.md) — Get started contributing to wspr-ai-lite.
 
 ---
+
 ### Further Reading
 - [Contributing](CONTRIBUTING.md)
 - [Roadmap](ROADMAP.md)
