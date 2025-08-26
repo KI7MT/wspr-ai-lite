@@ -28,10 +28,10 @@ Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit
 
 ## Overview
 
+- **MCP Integration**: Experimental MCP server (`wspr-ai-lite-mcp`) exposing safe APIs for AI agents. A manifest defines permitted queries and access control.
 - **Analytics Dashboard**: Streamlit UI lets you explore WSPR spots with SNR trends, DX distance analysis, station activity, and “QSO‑like” reciprocity views.
 - **Canonical Schema**: Data is normalized into a portable DuckDB file—consistent, lightweight, and ready for future backend upgrades.
 - **CLI Tools**: Click-based tools (`wspr-ai-lite`, `wspr-ai-lite-fetch`, `wspr-ai-lite-tools`) for downloading, ingesting, verifying, and managing the database.
-- **MCP Integration**: Experimental MCP server (`wspr-ai-lite-mcp`) exposing safe APIs for AI agents. A manifest defines permitted queries and access control.
 - **Roadmap (v0.4+ vision)**: MCP server will migrate to a **FastAPI + Uvicorn** backend with service control (start/stop/restart), enabling production-grade deployment.
 
 ---
