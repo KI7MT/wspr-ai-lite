@@ -8,6 +8,7 @@ data/*.duckdb
 .cache_history.json
 z-my-notes.md
 pre-release-checklist*
+rubric*
 
 # ------------------------
 # MkDocs Local Site Build

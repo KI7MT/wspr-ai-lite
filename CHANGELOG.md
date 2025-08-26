@@ -6,6 +6,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.7] - 2025-08-25
+### Fixed
+- **Cross-platform ingestion**
+  Ingest pipeline now transparently handles:
+  - `*.csv.gz` archives (Linux/macOS default on wsprnet.org)
+  - `*.zip` archives (needed for Windows users / alt mirrors)
+  - raw `*.csv` (uncompressed) files if present
+
+  This ensures a consistent workflow for all platforms:
+  ```bash
+  wspr-ai-lite ingest --from 2014-07 --to 2014-07 --db data/wspr.duckdb
+  ```
+
+  Works the same whether the archive is gzipped, zipped, or plain CSV.
+
+Documentation
+- Added docs/ingest.md describing ingestion pipeline, caching, offline usage, and archive format support.
+- Updated schema doc with note that ingestion supports .gz, .zip, or .csv transparently.
+
+---
+
+[0.3.7]: https://github.com/KI7MT/wspr-ai-lite/compare/v0.3.6...v0.3.7
+
 ## [0.3.6] - 2025-08-25
 ### Chaangd
 - Fixed versioning for release as local script failed to update properly.

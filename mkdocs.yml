@@ -29,6 +29,7 @@ nav:
   - Troubleshooting: troubleshooting.md
   - Process Release: process-release.md
   - WSPR Data Schema: schema.md
+  - Ingest CSV: ingest.md
 
 markdown_extensions:
   - admonition
