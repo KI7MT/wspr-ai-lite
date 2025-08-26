@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [0.3.7] - 2025-08-25
+
+### Changed
+- Consolidated roadmap documents:
+  - Merged `Roadmap-v0.4.0.md` into the canonical `ROADMAP.md`.
+  - Removed duplicate file to maintain a single source of truth for project planning.
+
+## [0.3.7] - 2025-08-25
 ### Fixed
 - **Cross-platform ingestion**
   Ingest pipeline now transparently handles:
