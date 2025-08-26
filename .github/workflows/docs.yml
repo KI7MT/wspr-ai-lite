@@ -40,8 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p docs
-          rsync -a --copy-links CODE_OF_CONDUCT.md CONTRIBUTING.md CONTRIBUTORS.md ROADMAP.md SECURITY.md SUPPORT.md docs/ || true
-          if [ -f LICENSE.md ]; then rsync -a --copy-links LICENSE.md docs/LICENSE.md; elif [ -f LICENSE ]; then rsync -a --copy-links LICENSE docs/LICENSE.md; fi
+          rsync -a --copy-links CODE_OF_CONDUCT.md CONTRIBUTING.md CONTRIBUTORS.md ROADMAP.md SECURITY.md SUPPORT.md LICENSE docs/ || true
 
       - name: Install MkDocs deps
         run: |
