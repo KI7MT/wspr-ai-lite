@@ -9,6 +9,7 @@ data/*.duckdb
 z-my-notes.md
 pre-release-checklist*
 rubric*
+todo*
 
 # ------------------------
 # MkDocs Local Site Build

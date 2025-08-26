@@ -17,23 +17,33 @@ theme:
 nav:
   - Home: index.md
   - Quickstart: ingest.md
-  - User Guide: userguide/user-guide.md
-  - User Interface: userinterface/ui.md
+
+  - User Guide:
+      - Overview: userguide/user-guide.md         # create or adjust path
+      - User Interface: userinterface/ui.md       # create or adjust path
+      # - CLI Reference:
+      #     - Ingest: cli/ingest.md               # optional future page
+      #     - Fetch: cli/fetch.md                 # optional future page
+      #     - Tools: cli/tools.md                 # optional future page
+
+  - Data Reference:
+      - Schema: schema.md
+
   - Development:
-    - Dev Setup: developer-setup.md
-    - Makefile: makefile.md
-    - Testing: testing.md
-    - Process Release: process-release.md
-    - Troubleshooting: troubleshooting.md
-  - Schema: schema.md
+      - Dev Setup: developer-setup.md
+      - Makefile: makefile.md
+      - Testing: testing.md
+      - Release Process: process-release.md
+      - Troubleshooting: troubleshooting.md
+
   - Project:
-    - Roadmap: ROADMAP.md
-    - Contributors:  CONTRIBUTORS.md
-    - Contributing: CONTRIBUTING.md
-    - Code of Conduct: CODE_OF_CONDUCT.md
-    - Security: SECURITY.md
-    - License: LICENSE
-    - Security: SECURITY.md
+      - Roadmap: ROADMAP.md
+      - Contributors: CONTRIBUTORS.md
+      - Contributing: CONTRIBUTING.md
+      - Code of Conduct: CODE_OF_CONDUCT.md
+      - Security: SECURITY.md
+      - License: LICENSE.md
+
   - Support: SUPPORT.md
 
 markdown_extensions:
