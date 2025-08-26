@@ -29,6 +29,6 @@ Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
 ### Further Reading
-- [Ingest Data](../ingest.md)
+- [Ingest Data](../userguide/cli/ingest.md)
 - [Contributing](../CONTRIBUTING.md)
 - [Roadmap](../ROADMAP.md)

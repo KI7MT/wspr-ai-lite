@@ -45,6 +45,7 @@ For more details, refer to the repository README on GitHub.
 
 Along with the UI comes several command line interface ( CLI ) applicaitons. The following is a brief description of each, and it's basic usage
 All scripts have a help function, e.g.: `<app-name> --help`
+
 ```bash
 # ingest from WSPRnet into the DuckDB columnar database
 wspr-ai-lite ingest --from YYYY-MM --to YYYY-MM --db data/wspr.duckdb [--cache .cache/wspr] [--offline]

@@ -28,6 +28,6 @@ wspr-ai-lite ingest --from 2015-01 --to 2015-03 --db data/wspr.duckdb
 
 ---
 ### Further Reading
-- [Streamlit UI](userinterface/ui.md)
-- [Developer Setup](developer-setup.md)
-- [Roadmap](ROADMAP.md)
+- [Streamlit UI](../../userinterface/ui.md)
+- [Developer Setup](../../development/developer-setup.md)
+- [Roadmap](../../ROADMAP.md)

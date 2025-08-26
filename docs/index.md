@@ -1,16 +1,18 @@
 # wspr-ai-lite Documentation
-Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit**, with safe query access via **MCP Agents**.
+Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit**, with data-safe query access via **MCP Agents**.
 
-[![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
-[![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
+## Resources
+
 [![MCP](https://img.shields.io/badge/AI--Agent--Ready-MCP-green)](https://modelcontextprotocol.io/)
+[![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-blue)](https://streamlit.io/)
+[![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![Docs](https://img.shields.io/badge/Docs-GitHub_Pages-blue)](https://ki7mt.github.io/wspr-ai-lite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
 ## Overview
-`wspr-ai-lite` is a lightweight analytics tool for **Weak Signal Propagation Reporter (WSPR)** data.
+`wspr-ai-lite` is a lightweight analytics tool for **Weak Signal Propagation (WSPR)** data.
 It combines **DuckDB** for local storage, **Streamlit** for visualization, and is now **AI-Agent ready** via MCP.
 
 ## Quick Workflow
@@ -19,9 +21,9 @@ It combines **DuckDB** for local storage, **Streamlit** for visualization, and i
 3. **Optional: MCP Tools** → Query WSPR data safely from AI agents.
 
 ## Documentation Index
-- [Ingest Data](ingest.md) — Fetch and normalize WSPRNet archives into DuckDB.
+- [Ingest Data](userguide/cli/ingest.md) — Fetch and normalize WSPRNet archives into DuckDB.
 - [UI Guide](userinterface/ui.md) — Launch and navigate the Streamlit dashboard.
-- [Developer Setup](developer-setup.md) — Get started contributing to wspr-ai-lite.
+- [Developer Setup](development/developer-setup.md) — Get started contributing to wspr-ai-lite.
 
 ---
 ### Further Reading

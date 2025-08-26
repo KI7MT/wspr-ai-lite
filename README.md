@@ -1,23 +1,23 @@
 # wspr-ai-lite
-Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit**, with safe query access via **MCP Agents**.
+Lightweight WSPR analytics and AI‑ready backend using **DuckDB** + **Streamlit**, with data-safe query access via **MCP Agents**.
 
 ## Resources
 
-[![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B)](https://streamlit.io/)
-[![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![MCP](https://img.shields.io/badge/AI--Agent--Ready-MCP-green)](https://modelcontextprotocol.io/)
+[![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-blue)](https://streamlit.io/)
+[![DuckDB](https://img.shields.io/badge/Database-DuckDB-blue)](https://duckdb.org/)
 [![Docs](https://img.shields.io/badge/Docs-GitHub_Pages-blue)](https://ki7mt.github.io/wspr-ai-lite/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Workflows and Packaging Status
 
-**Versions**
+**Project Versions**
 [![GitHub release](https://img.shields.io/github/v/release/KI7MT/wspr-ai-lite)](https://github.com/KI7MT/wspr-ai-lite/releases)
 [![GitHub tag](https://img.shields.io/github/tag/KI7MT/wspr-ai-lite?sort=semver)](https://github.com/KI7MT/wspr-ai-lite/tags)
 [![PyPI version](https://img.shields.io/pypi/v/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 [![Python versions](https://img.shields.io/pypi/pyversions/wspr-ai-lite.svg)](https://pypi.org/project/wspr-ai-lite/)
 
-**CI/CD**
+**CI/CD Pipelines**
 [![CI](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/ci.yml)
 [![Smoke](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/smoke.yml)
 [![Publish](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml/badge.svg)](https://github.com/KI7MT/wspr-ai-lite/actions/workflows/release.yml)

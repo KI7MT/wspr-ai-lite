@@ -16,25 +16,25 @@ theme:
 
 nav:
   - Home: index.md
-  - Quickstart: ingest.md
-
+  - Quickstart: userguide/quick-start.md
   - User Guide:
-      - Overview: userguide/user-guide.md         # create or adjust path
-      - User Interface: userinterface/ui.md       # create or adjust path
-      # - CLI Reference:
-      #     - Ingest: cli/ingest.md               # optional future page
-      #     - Fetch: cli/fetch.md                 # optional future page
-      #     - Tools: cli/tools.md                 # optional future page
+      - Overview: userguide/user-guide.md
+      - User Interface: userinterface/ui.md
+      - CLI Reference:
+          - Ingest: userguide/cli/ingest.md
+          # - Fetch: cli/fetch.md                 # optional future page
+          # - Tools: cli/tools.md                 # optional future page
+          # - MCP Server: cli/tools.md                 # optional future page
 
   - Data Reference:
-      - Schema: schema.md
+      - Schema: development/schema.md
 
   - Development:
-      - Dev Setup: developer-setup.md
-      - Makefile: makefile.md
-      - Testing: testing.md
-      - Release Process: process-release.md
-      - Troubleshooting: troubleshooting.md
+      - Dev Setup: development/developer-setup.md
+      - Makefile: development/makefile.md
+      - Testing: development/testing.md
+      - Release Process: development/process-release.md
+      - Troubleshooting: development/troubleshooting.md
 
   - Project:
       - Roadmap: ROADMAP.md
@@ -42,7 +42,7 @@ nav:
       - Contributing: CONTRIBUTING.md
       - Code of Conduct: CODE_OF_CONDUCT.md
       - Security: SECURITY.md
-      - License: LICENSE.md
+      - License (download): LICENSE
 
   - Support: SUPPORT.md
 
